@@ -4,7 +4,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include <Drivers/interrupts.h>
+#include <interrupts.h>
 
 /* Constants required to setup the task context. */
 #define portINITIAL_SPSR						( ( portSTACK_TYPE ) 0x1f ) /* System mode, ARM mode, interrupts enabled. */
@@ -51,6 +51,7 @@ extern void vPortISRStartFirstTask( void );
  *
  * See header file for description. 
  */
+__attribute__((no_instrument_function))
 portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE pxCode, void *pvParameters )
 {
 portSTACK_TYPE *pxOriginalTOS;
@@ -125,7 +126,7 @@ portSTACK_TYPE *pxOriginalTOS;
 	return pxTopOfStack;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 portBASE_TYPE xPortStartScheduler( void )
 {
 	/* Start the timer that generates the tick ISR.  Interrupts are disabled
@@ -139,7 +140,7 @@ portBASE_TYPE xPortStartScheduler( void )
 	return 0;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vPortEndScheduler( void )
 {
 	/* It is unlikely that the ARM port will require this function as there
@@ -153,6 +154,7 @@ void vPortEndScheduler( void )
  *
  *	See bt_interrupts.c in the RaspberryPi Drivers folder.
  */
+__attribute__((no_instrument_function))
 void vTickISR(int nIRQ, void *pParam )
 {
 	vTaskIncrementTick();
@@ -167,6 +169,7 @@ void vTickISR(int nIRQ, void *pParam )
 /*
  * Setup the timer 0 to generate the tick interrupts at the required frequency.
  */
+__attribute__((no_instrument_function))
 static void prvSetupTimerInterrupt( void )
 {
 	unsigned long ulCompareMatch;

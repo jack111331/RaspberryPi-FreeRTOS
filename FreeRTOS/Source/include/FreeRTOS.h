@@ -81,7 +81,6 @@
 /* Definitions specific to the port being used. */
 #include "portable.h"
 
-
 /* Defines the prototype to which the application task hook function must
 conform. */
 typedef portBASE_TYPE (*pdTASK_HOOK_CODE)( void * );

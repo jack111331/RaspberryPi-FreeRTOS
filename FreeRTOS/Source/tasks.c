@@ -407,7 +407,7 @@ static tskTCB *prvAllocateTCBAndStack( unsigned short usStackDepth, portSTACK_TY
 /*-----------------------------------------------------------
  * TASK CREATION API documented in task.h
  *----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 signed portBASE_TYPE xTaskGenericCreate( pdTASK_CODE pxTaskCode, const signed char * const pcName, unsigned short usStackDepth, void *pvParameters, unsigned portBASE_TYPE uxPriority, xTaskHandle *pxCreatedTask, portSTACK_TYPE *puxStackBuffer, const xMemoryRegion * const xRegions )
 {
 signed portBASE_TYPE xReturn;
@@ -572,7 +572,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskDelete == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskDelete( xTaskHandle pxTaskToDelete )
 	{
 	tskTCB *pxTCB;
@@ -638,7 +638,7 @@ tskTCB * pxNewTCB;
  *----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskDelayUntil == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskDelayUntil( portTickType * const pxPreviousWakeTime, portTickType xTimeIncrement )
 	{
 	portTickType xTimeToWake;
@@ -703,7 +703,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskDelay == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskDelay( portTickType xTicksToDelay )
 	{
 	portTickType xTimeToWake;
@@ -749,7 +749,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_uxTaskPriorityGet == 1 )
-
+__attribute__((no_instrument_function))
 	unsigned portBASE_TYPE uxTaskPriorityGet( xTaskHandle pxTask )
 	{
 	tskTCB *pxTCB;
@@ -771,7 +771,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskPrioritySet == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskPrioritySet( xTaskHandle pxTask, unsigned portBASE_TYPE uxNewPriority )
 	{
 	tskTCB *pxTCB;
@@ -879,7 +879,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskSuspend == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskSuspend( xTaskHandle pxTaskToSuspend )
 	{
 	tskTCB *pxTCB;
@@ -943,7 +943,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskSuspend == 1 )
-
+__attribute__((no_instrument_function))
 	signed portBASE_TYPE xTaskIsTaskSuspended( xTaskHandle xTask )
 	{
 	portBASE_TYPE xReturn = pdFALSE;
@@ -977,7 +977,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskSuspend == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskResume( xTaskHandle pxTaskToResume )
 	{
 	tskTCB *pxTCB;
@@ -1022,7 +1022,7 @@ tskTCB * pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( ( INCLUDE_xTaskResumeFromISR == 1 ) && ( INCLUDE_vTaskSuspend == 1 ) )
-
+__attribute__((no_instrument_function))
 	portBASE_TYPE xTaskResumeFromISR( xTaskHandle pxTaskToResume )
 	{
 	portBASE_TYPE xYieldRequired = pdFALSE;
@@ -1068,7 +1068,7 @@ tskTCB * pxNewTCB;
  * PUBLIC SCHEDULER CONTROL documented in task.h
  *----------------------------------------------------------*/
 
-
+__attribute__((no_instrument_function))
 void vTaskStartScheduler( void )
 {
 portBASE_TYPE xReturn;
@@ -1133,7 +1133,7 @@ portBASE_TYPE xReturn;
 	configASSERT( xReturn );
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vTaskEndScheduler( void )
 {
 	/* Stop the scheduler interrupts and call the portable scheduler end
@@ -1144,7 +1144,7 @@ void vTaskEndScheduler( void )
 	vPortEndScheduler();
 }
 /*----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vTaskSuspendAll( void )
 {
 	/* A critical section is not required as the variable is of type
@@ -1152,7 +1152,7 @@ void vTaskSuspendAll( void )
 	++uxSchedulerSuspended;
 }
 /*----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 signed portBASE_TYPE xTaskResumeAll( void )
 {
 register tskTCB *pxTCB;
@@ -1239,7 +1239,7 @@ signed portBASE_TYPE xAlreadyYielded = pdFALSE;
  *----------------------------------------------------------*/
 
 
-
+__attribute__((no_instrument_function))
 portTickType xTaskGetTickCount( void )
 {
 portTickType xTicks;
@@ -1254,7 +1254,7 @@ portTickType xTicks;
 	return xTicks;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 portTickType xTaskGetTickCountFromISR( void )
 {
 portTickType xReturn;
@@ -1267,7 +1267,7 @@ unsigned portBASE_TYPE uxSavedInterruptStatus;
 	return xReturn;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 {
 	/* A critical section is not required because the variables are of type
@@ -1277,7 +1277,7 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_pcTaskGetTaskName == 1 )
-
+__attribute__((no_instrument_function))
 	signed char *pcTaskGetTaskName( xTaskHandle xTaskToQuery )
 	{
 	tskTCB *pxTCB;
@@ -1292,7 +1292,7 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_TRACE_FACILITY == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskList( signed char *pcWriteBuffer )
 	{
 	unsigned portBASE_TYPE uxQueue;
@@ -1355,7 +1355,7 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 /*----------------------------------------------------------*/
 
 #if ( configGENERATE_RUN_TIME_STATS == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskGetRunTimeStats( signed char *pcWriteBuffer )
 	{
 	unsigned portBASE_TYPE uxQueue;
@@ -1430,7 +1430,7 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 /*----------------------------------------------------------*/
 
 #if ( INCLUDE_xTaskGetIdleTaskHandle == 1 )
-
+__attribute__((no_instrument_function))
 	xTaskHandle xTaskGetIdleTaskHandle( void )
 	{
 		/* If xTaskGetIdleTaskHandle() is called before the scheduler has been
@@ -1445,7 +1445,7 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
  * SCHEDULER INTERNALS AVAILABLE FOR PORTING PURPOSES
  * documented in task.h
  *----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vTaskIncrementTick( void )
 {
 tskTCB * pxTCB;
@@ -1522,7 +1522,7 @@ tskTCB * pxTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskSetApplicationTaskTag( xTaskHandle xTask, pdTASK_HOOK_CODE pxHookFunction )
 	{
 	tskTCB *xTCB;
@@ -1548,7 +1548,7 @@ tskTCB * pxTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
-
+__attribute__((no_instrument_function))
 	pdTASK_HOOK_CODE xTaskGetApplicationTaskTag( xTaskHandle xTask )
 	{
 	tskTCB *xTCB;
@@ -1577,7 +1577,7 @@ tskTCB * pxTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
-
+__attribute__((no_instrument_function))
 	portBASE_TYPE xTaskCallApplicationTaskHook( xTaskHandle xTask, void *pvParameter )
 	{
 	tskTCB *xTCB;
@@ -1607,7 +1607,7 @@ tskTCB * pxTCB;
 
 #endif
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vTaskSwitchContext( void )
 {
 	if( uxSchedulerSuspended != ( unsigned portBASE_TYPE ) pdFALSE )
@@ -1667,7 +1667,7 @@ void vTaskSwitchContext( void )
 	}
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vTaskPlaceOnEventList( const xList * const pxEventList, portTickType xTicksToWait )
 {
 portTickType xTimeToWake;
@@ -1716,8 +1716,88 @@ portTickType xTimeToWake;
 }
 /*-----------------------------------------------------------*/
 
-#if configUSE_TIMERS == 1
+/* The item value of the event list item is normally used to hold the priority
+of the task to which it belongs (coded to allow it to be held in reverse
+priority order).  However, it is occasionally borrowed for other purposes.  It
+is important its value is not updated due to a task priority change while it is
+being used for another purpose.  The following bit definition is used to inform
+the scheduler that the value should not be changed - in which case it is the
+responsibility of whichever module is using the value to ensure it gets set back
+to its original value when it is released. */
+#if configUSE_16_BIT_TICKS == 1
+	#define taskEVENT_LIST_ITEM_VALUE_IN_USE	0x8000U
+#else
+	#define taskEVENT_LIST_ITEM_VALUE_IN_USE	0x80000000UL
+#endif
 
+void vTaskPlaceOnUnorderedEventList( xList * pxEventList, const portTickType xItemValue, const portTickType xTicksToWait )
+{
+portTickType xTimeToWake;
+
+	configASSERT( pxEventList );
+
+	/* THIS FUNCTION MUST BE CALLED WITH THE SCHEDULER SUSPENDED.  It is used by
+	the event groups implementation. */
+	configASSERT( uxSchedulerSuspended != 0 );
+
+	/* Store the item value in the event list item.  It is safe to access the
+	event list item here as interrupts won't access the event list item of a
+	task that is not in the Blocked state. */
+	listSET_LIST_ITEM_VALUE( &( pxCurrentTCB->xEventListItem ), xItemValue | taskEVENT_LIST_ITEM_VALUE_IN_USE );
+
+	/* Place the event list item of the TCB at the end of the appropriate event
+	list.  It is safe to access the event list here because it is part of an
+	event group implementation - and interrupts don't access event groups
+	directly (instead they access them indirectly by pending function calls to
+	the task level). */
+	vListInsertEnd( pxEventList, &( pxCurrentTCB->xEventListItem ) );
+
+	/* The task must be removed from the ready list before it is added to the
+	blocked list.  Exclusive access can be assured to the ready list as the
+	scheduler is locked. */
+	if( vListRemove( &( pxCurrentTCB->xGenericListItem ) ) == ( unsigned portBASE_TYPE ) 0 )
+	{
+		/* The current task must be in a ready list, so there is no need to
+		check, and the port reset macro can be called directly. */
+		//portRESET_READY_PRIORITY( pxCurrentTCB->uxPriority, uxTopReadyPriority );
+	}
+	else
+	{
+		//mtCOVERAGE_TEST_MARKER();
+	}
+
+	#if ( INCLUDE_vTaskSuspend == 1 )
+	{
+		if( xTicksToWait == portMAX_DELAY )
+		{
+			/* Add the task to the suspended task list instead of a delayed task
+			list to ensure it is not woken by a timing event.  It will block
+			indefinitely. */
+			vListInsertEnd( &xSuspendedTaskList, &( pxCurrentTCB->xGenericListItem ) );
+		}
+		else
+		{
+			/* Calculate the time at which the task should be woken if the event
+			does not occur.  This may overflow but this doesn't matter, the
+			kernel will manage it correctly. */
+			xTimeToWake = xTickCount + xTicksToWait;
+			prvAddCurrentTaskToDelayedList( xTimeToWake );
+		}
+	}
+	#else /* INCLUDE_vTaskSuspend */
+	{
+			/* Calculate the time at which the task should be woken if the event does
+			not occur.  This may overflow but this doesn't matter, the kernel
+			will manage it correctly. */
+			xTimeToWake = xTickCount + xTicksToWait;
+			prvAddCurrentTaskToDelayedList( xTimeToWake );
+	}
+	#endif /* INCLUDE_vTaskSuspend */
+}
+/*-----------------------------------------------------------*/
+
+#if configUSE_TIMERS == 1
+__attribute__((no_instrument_function))
 	void vTaskPlaceOnEventListRestricted( const xList * const pxEventList, portTickType xTicksToWait )
 	{
 	portTickType xTimeToWake;
@@ -1749,7 +1829,7 @@ portTickType xTimeToWake;
 
 #endif /* configUSE_TIMERS */
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 signed portBASE_TYPE xTaskRemoveFromEventList( const xList * const pxEventList )
 {
 tskTCB *pxUnblockedTCB;
@@ -1801,6 +1881,51 @@ portBASE_TYPE xReturn;
 }
 /*-----------------------------------------------------------*/
 
+portBASE_TYPE xTaskRemoveFromUnorderedEventList( xListItem * pxEventListItem, const portTickType xItemValue )
+{
+tskTCB *pxUnblockedTCB;
+portBASE_TYPE xReturn;
+
+	/* THIS FUNCTION MUST BE CALLED WITH THE SCHEDULER SUSPENDED.  It is used by
+	the event flags implementation. */
+	configASSERT( uxSchedulerSuspended != pdFALSE );
+
+	/* Store the new item value in the event list. */
+	listSET_LIST_ITEM_VALUE( pxEventListItem, xItemValue | taskEVENT_LIST_ITEM_VALUE_IN_USE );
+
+	/* Remove the event list form the event flag.  Interrupts do not access
+	event flags. */
+	pxUnblockedTCB = ( tskTCB * ) listGET_LIST_ITEM_OWNER( pxEventListItem );
+	configASSERT( pxUnblockedTCB );
+	( void ) vListRemove( pxEventListItem );
+
+	/* Remove the task from the delayed list and add it to the ready list.  The
+	scheduler is suspended so interrupts will not be accessing the ready
+	lists. */
+	( void ) vListRemove( &( pxUnblockedTCB->xGenericListItem ) );
+	prvAddTaskToReadyQueue( pxUnblockedTCB );
+
+	if( pxUnblockedTCB->uxPriority > pxCurrentTCB->uxPriority )
+	{
+		/* Return true if the task removed from the event list has
+		a higher priority than the calling task.  This allows
+		the calling task to know if it should force a context
+		switch now. */
+		xReturn = pdTRUE;
+
+		/* Mark that a yield is pending in case the user is not using the
+		"xHigherPriorityTaskWoken" parameter to an ISR safe FreeRTOS function. */
+		xMissedYield = pdTRUE;
+	}
+	else
+	{
+		xReturn = pdFALSE;
+	}
+
+	return xReturn;
+}
+/*-----------------------------------------------------------*/
+__attribute__((no_instrument_function))
 void vTaskSetTimeOutState( xTimeOutType * const pxTimeOut )
 {
 	configASSERT( pxTimeOut );
@@ -1808,7 +1933,7 @@ void vTaskSetTimeOutState( xTimeOutType * const pxTimeOut )
 	pxTimeOut->xTimeOnEntering = xTickCount;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 portBASE_TYPE xTaskCheckForTimeOut( xTimeOutType * const pxTimeOut, portTickType * const pxTicksToWait )
 {
 portBASE_TYPE xReturn;
@@ -1854,7 +1979,7 @@ portBASE_TYPE xReturn;
 	return xReturn;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vTaskMissedYield( void )
 {
 	xMissedYield = pdTRUE;
@@ -1862,6 +1987,7 @@ void vTaskMissedYield( void )
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_TRACE_FACILITY == 1 )
+__attribute__((no_instrument_function))
 	unsigned portBASE_TYPE uxTaskGetTaskNumber( xTaskHandle xTask )
 	{
 	unsigned portBASE_TYPE uxReturn;
@@ -1883,6 +2009,7 @@ void vTaskMissedYield( void )
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_TRACE_FACILITY == 1 )
+__attribute__((no_instrument_function))
 	void vTaskSetTaskNumber( xTaskHandle xTask, unsigned portBASE_TYPE uxHandle )
 	{
 	tskTCB *pxTCB;
@@ -1907,6 +2034,7 @@ void vTaskMissedYield( void )
  * void prvIdleTask( void *pvParameters );
  *
  */
+__attribute__((no_instrument_function))
 static portTASK_FUNCTION( prvIdleTask, pvParameters )
 {
 	/* Stop warnings. */
@@ -1971,7 +2099,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
  *----------------------------------------------------------*/
 
 
-
+__attribute__((no_instrument_function))
 static void prvInitialiseTCBVariables( tskTCB *pxTCB, const signed char * const pcName, unsigned portBASE_TYPE uxPriority, const xMemoryRegion * const xRegions, unsigned short usStackDepth )
 {
 	/* Store the function name in the TCB. */
@@ -2040,7 +2168,7 @@ static void prvInitialiseTCBVariables( tskTCB *pxTCB, const signed char * const 
 /*-----------------------------------------------------------*/
 
 #if ( portUSING_MPU_WRAPPERS == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskAllocateMPURegions( xTaskHandle xTaskToModify, const xMemoryRegion * const xRegions )
 	{
 	tskTCB *pxTCB;
@@ -2057,7 +2185,7 @@ static void prvInitialiseTCBVariables( tskTCB *pxTCB, const signed char * const 
 	}
 	/*-----------------------------------------------------------*/
 #endif
-
+__attribute__((no_instrument_function))
 static void prvInitialiseTaskLists( void )
 {
 unsigned portBASE_TYPE uxPriority;
@@ -2089,7 +2217,7 @@ unsigned portBASE_TYPE uxPriority;
 	pxOverflowDelayedTaskList = &xDelayedTaskList2;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 static void prvCheckTasksWaitingTermination( void )
 {
 	#if ( INCLUDE_vTaskDelete == 1 )
@@ -2124,7 +2252,7 @@ static void prvCheckTasksWaitingTermination( void )
 	#endif
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 static void prvAddCurrentTaskToDelayedList( portTickType xTimeToWake )
 {
 	/* The list item will be inserted in wake time order. */
@@ -2150,7 +2278,7 @@ static void prvAddCurrentTaskToDelayedList( portTickType xTimeToWake )
 	}
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 static tskTCB *prvAllocateTCBAndStack( unsigned short usStackDepth, portSTACK_TYPE *puxStackBuffer )
 {
 tskTCB *pxNewTCB;
@@ -2190,7 +2318,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_TRACE_FACILITY == 1 )
-
+__attribute__((no_instrument_function))
 	static void prvListTaskWithinSingleList( const signed char *pcWriteBuffer, xList *pxList, signed char cStatus )
 	{
 	volatile tskTCB *pxNextTCB, *pxFirstTCB;
@@ -2222,7 +2350,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configGENERATE_RUN_TIME_STATS == 1 )
-
+__attribute__((no_instrument_function))
 	static void prvGenerateRunTimeStatsForTasksInList( const signed char *pcWriteBuffer, xList *pxList, unsigned long ulTotalRunTime )
 	{
 	volatile tskTCB *pxNextTCB, *pxFirstTCB;
@@ -2293,7 +2421,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( ( configUSE_TRACE_FACILITY == 1 ) || ( INCLUDE_uxTaskGetStackHighWaterMark == 1 ) )
-
+__attribute__((no_instrument_function))
 	static unsigned short usTaskCheckFreeStackSpace( const unsigned char * pucStackByte )
 	{
 	register unsigned short usCount = 0U;
@@ -2313,7 +2441,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_uxTaskGetStackHighWaterMark == 1 )
-
+__attribute__((no_instrument_function))
 	unsigned portBASE_TYPE uxTaskGetStackHighWaterMark( xTaskHandle xTask )
 	{
 	tskTCB *pxTCB;
@@ -2341,7 +2469,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_vTaskDelete == 1 )
-
+__attribute__((no_instrument_function))
 	static void prvDeleteTCB( tskTCB *pxTCB )
 	{
 		/* This call is required specifically for the TriCore port.  It must be
@@ -2361,7 +2489,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( ( INCLUDE_xTaskGetCurrentTaskHandle == 1 ) || ( configUSE_MUTEXES == 1 ) )
-
+__attribute__((no_instrument_function))
 	xTaskHandle xTaskGetCurrentTaskHandle( void )
 	{
 	xTaskHandle xReturn;
@@ -2379,7 +2507,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
-
+__attribute__((no_instrument_function))
 	portBASE_TYPE xTaskGetSchedulerState( void )
 	{
 	portBASE_TYPE xReturn;
@@ -2407,7 +2535,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_MUTEXES == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskPriorityInherit( xTaskHandle * const pxMutexHolder )
 	{
 	tskTCB * const pxTCB = ( tskTCB * ) pxMutexHolder;
@@ -2443,7 +2571,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_MUTEXES == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskPriorityDisinherit( xTaskHandle * const pxMutexHolder )
 	{
 	tskTCB * const pxTCB = ( tskTCB * ) pxMutexHolder;
@@ -2470,7 +2598,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( portCRITICAL_NESTING_IN_TCB == 1 )
-
+__attribute__((no_instrument_function))
 	void vTaskEnterCritical( void )
 	{
 		portDISABLE_INTERRUPTS();
@@ -2485,7 +2613,7 @@ tskTCB *pxNewTCB;
 /*-----------------------------------------------------------*/
 
 #if ( portCRITICAL_NESTING_IN_TCB == 1 )
-
+__attribute__((no_instrument_function))
 void vTaskExitCritical( void )
 {
 	if( xSchedulerRunning != pdFALSE )
@@ -2505,6 +2633,17 @@ void vTaskExitCritical( void )
 #endif
 /*-----------------------------------------------------------*/
 
+portTickType uxTaskResetEventItemValue( void )
+{
+portTickType uxReturn;
 
+	uxReturn = listGET_LIST_ITEM_VALUE( &( pxCurrentTCB->xEventListItem ) );
 
+	/* Reset the event list item to its normal value - so it can be used with
+	queues and semaphores. */
+	listSET_LIST_ITEM_VALUE( &( pxCurrentTCB->xEventListItem ), ( ( portTickType ) configMAX_PRIORITIES - ( portTickType ) pxCurrentTCB->uxPriority ) ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+
+	return uxReturn;
+}
+/*-----------------------------------------------------------*/
 

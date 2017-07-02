@@ -1248,7 +1248,7 @@ static void prvCopyDataToQueue( xQUEUE *pxQueue, const void *pvItemToQueue, port
 	}
 	else if( xPosition == queueSEND_TO_BACK )
 	{
-		memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( unsigned ) pxQueue->uxItemSize );
+		memcpy2( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( unsigned ) pxQueue->uxItemSize );
 		pxQueue->pcWriteTo += pxQueue->uxItemSize;
 		if( pxQueue->pcWriteTo >= pxQueue->pcTail )
 		{
@@ -1257,7 +1257,7 @@ static void prvCopyDataToQueue( xQUEUE *pxQueue, const void *pvItemToQueue, port
 	}
 	else
 	{
-		memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( unsigned ) pxQueue->uxItemSize );
+		memcpy2( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( unsigned ) pxQueue->uxItemSize );
 		pxQueue->pcReadFrom -= pxQueue->uxItemSize;
 		if( pxQueue->pcReadFrom < pxQueue->pcHead )
 		{
@@ -1278,7 +1278,7 @@ static void prvCopyDataFromQueue( xQUEUE * const pxQueue, const void *pvBuffer )
 		{
 			pxQueue->pcReadFrom = pxQueue->pcHead;
 		}
-		memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( unsigned ) pxQueue->uxItemSize );
+		memcpy2( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( unsigned ) pxQueue->uxItemSize );
 	}
 }
 /*-----------------------------------------------------------*/
@@ -1505,7 +1505,7 @@ signed portBASE_TYPE xReturn;
 				pxQueue->pcReadFrom = pxQueue->pcHead;
 			}
 			--( pxQueue->uxMessagesWaiting );
-			memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( unsigned ) pxQueue->uxItemSize );
+			memcpy2( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( unsigned ) pxQueue->uxItemSize );
 
 			xReturn = pdPASS;
 
@@ -1580,7 +1580,7 @@ signed portBASE_TYPE xReturn;
 			pxQueue->pcReadFrom = pxQueue->pcHead;
 		}
 		--( pxQueue->uxMessagesWaiting );
-		memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( unsigned ) pxQueue->uxItemSize );
+		memcpy2( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( unsigned ) pxQueue->uxItemSize );
 
 		if( ( *pxCoRoutineWoken ) == pdFALSE )
 		{

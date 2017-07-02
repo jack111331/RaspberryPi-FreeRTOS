@@ -1,3 +1,7 @@
+bare metal USB driver for RPI with ARP example (current port)
+https://github.com/rsta2/uspi
+https://www.raspberrypi.org/forums/viewtopic.php?f=72&t=92579
+
 https://github.com/xinu-os/xinu/tree/master/device/smsc9512
 
 http://www.pebblebay.com/raspberry-pi-embedded/
@@ -8,11 +12,10 @@ controller embedded in the processor
 – A device driver for LAN9512/4 Ethernet controller
 Might be similar to the RPI 2?
 
-Starting point for USB
 https://github.com/Chadderz121/csud
-
-bare metal USB driver for RPI with ARP example, uses MMU though... Do we need caching?
-https://github.com/rsta2/uspi
 
 TCP/UDP/IP RTOS
 http://www.nxp.com/files/microcontrollers/doc/app_note/AN3470.pdf
+
+datasheet Synopsys DesignWare USB 2.0 OTG
+http://www.quicklogic.com/assets/pdf/data-sheets/QL-Hi-Speed-USB-2.0-OTG-Controller-Data-Sheet.pdf#G1163015

@@ -2,6 +2,7 @@
 .extern __bss_start
 .extern __bss_end
 .extern vFreeRTOS_ISR
+.extern vFreeRTOS_ISR_KLUDGE
 .extern vPortYieldProcessor
 .extern DisableInterrupts
 .extern main
@@ -101,7 +102,8 @@ zero_loop:
 	
 	;@ 	mov	sp,#0x1000000
 	b main									;@ We're ready?? Lets start main execution!
-	.section .text
+
+.section .text
 
 undefined_instruction:
 	b undefined_instruction

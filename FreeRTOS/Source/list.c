@@ -112,9 +112,9 @@ volatile xListItem * pxIndex;
 
 	pxNewListItem->pxNext = pxIndex->pxNext;
 	pxNewListItem->pxPrevious = pxList->pxIndex;
-	pxIndex->pxNext->pxPrevious = ( volatile xListItem * ) pxNewListItem;
-	pxIndex->pxNext = ( volatile xListItem * ) pxNewListItem;
-	pxList->pxIndex = ( volatile xListItem * ) pxNewListItem;
+	pxIndex->pxNext->pxPrevious = ( xListItem * ) pxNewListItem;
+	pxIndex->pxNext = ( xListItem * ) pxNewListItem;
+	pxList->pxIndex = ( xListItem * ) pxNewListItem;
 
 	/* Remember which list the item is in. */
 	pxNewListItem->pvContainer = ( void * ) pxList;
@@ -125,7 +125,7 @@ volatile xListItem * pxIndex;
 
 void vListInsert( xList *pxList, xListItem *pxNewListItem )
 {
-volatile xListItem *pxIterator;
+xListItem *pxIterator;
 portTickType xValueOfInsertion;
 
 	/* Insert the new list item into the list, sorted in ulListItem order. */
@@ -168,9 +168,9 @@ portTickType xValueOfInsertion;
 	}
 
 	pxNewListItem->pxNext = pxIterator->pxNext;
-	pxNewListItem->pxNext->pxPrevious = ( volatile xListItem * ) pxNewListItem;
+	pxNewListItem->pxNext->pxPrevious = ( xListItem * ) pxNewListItem;
 	pxNewListItem->pxPrevious = pxIterator;
-	pxIterator->pxNext = ( volatile xListItem * ) pxNewListItem;
+	pxIterator->pxNext = ( xListItem * ) pxNewListItem;
 
 	/* Remember which list the item is in.  This allows fast removal of the
 	item later. */
@@ -180,7 +180,7 @@ portTickType xValueOfInsertion;
 }
 /*-----------------------------------------------------------*/
 
-void vListRemove( xListItem *pxItemToRemove )
+unsigned portBASE_TYPE vListRemove( xListItem *pxItemToRemove )
 {
 xList * pxList;
 
@@ -199,6 +199,8 @@ xList * pxList;
 
 	pxItemToRemove->pvContainer = NULL;
 	( pxList->uxNumberOfItems )--;
+
+	return pxList->uxNumberOfItems;
 }
 /*-----------------------------------------------------------*/
 

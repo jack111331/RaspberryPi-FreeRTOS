@@ -143,6 +143,7 @@ static size_t xFreeBytesRemaining = ( ( size_t ) configTOTAL_HEAP_SIZE ) & ( ( s
 
 /*-----------------------------------------------------------*/
 size_t allocated = 0;
+__attribute__((no_instrument_function))
 void *pvPortMalloc( size_t xWantedSize )
 {
 xBlockLink *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
@@ -234,7 +235,7 @@ void *pvReturn = NULL;
 	return pvReturn;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 void vPortFree( void *pv )
 {
 unsigned char *puc = ( unsigned char * ) pv;
@@ -256,6 +257,7 @@ xBlockLink *pxLink;
 			prvInsertBlockIntoFreeList( ( ( xBlockLink * ) pxLink ) );			
 		}
 		xTaskResumeAll();
+
 	}
 }
 /*-----------------------------------------------------------*/
@@ -304,7 +306,7 @@ unsigned char *pucHeapEnd;
 	xFreeBytesRemaining -= heapSTRUCT_SIZE;
 }
 /*-----------------------------------------------------------*/
-
+__attribute__((no_instrument_function))
 static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert )
 {
 xBlockLink *pxIterator;
