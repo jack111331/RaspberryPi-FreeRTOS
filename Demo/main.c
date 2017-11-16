@@ -22,7 +22,6 @@
 #define BRAKE_LED_GPIO 		24
 #define CLUTCH_LED_GPIO 	16
 
-#define TASK_DELAY				1000
 #define ACCELERATE_TASK_DELAY 	1000
 #define BRAKE_TASK_DELAY 		2000
 #define CLUTCH_TASK_DELAY 		5000
@@ -31,7 +30,7 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-void task(int delay = TASK_DELAY) {
+void task(int delay) {
 	int i = 0;
 	while(1) {
 		i = i ? 0 : 1;
