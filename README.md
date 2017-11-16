@@ -9,28 +9,23 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
 
    ```git clone https://github.com/rooperl/RaspberryPi-FreeRTOS```
 
-2. Run make in the root directory to build a kernel image file:
-
-   ```
-   cd RaspberryPi-FreeRTOS
-   make clean
-   make
-   ```
-
-   Alternatively, you can use the deploy script: (make && make clean)
+2. Use the deploy script to build a kernel image file:
 
    ```
    ./deploy
    ```
 
+   This will copy and replace the kernel7.img file in the SD_Example directory
+   after making a clean build
+
    If you don't need to change any source files, you can use the pre-built
-   kernel7.img file in the root directory.
+   kernel7.img file included in the SD_Example directory.
 
 3. Format an SD card with the FAT32 filesystem.
 
-4. Move bootcode.bin, config.txt, start.elf and kernel7.img to the SD card.
+4. Copy the contents of the SD_Example directory to your SD card.
 
-   SD card folder structure:
+   SD card root folder structure should look like the following:
    - bootcode.bin
    - config.txt
    - kernel7.img
