@@ -1,7 +1,6 @@
 //main.c
 //authored by Jared Hull
 //
-//tasks 1 and 2 blink the ACT LED
 //main initialises the devices and IP tasks
 
 #include <FreeRTOS.h>
@@ -13,32 +12,24 @@
 #include "FreeRTOS_IP.h"
 #include "FreeRTOS_Sockets.h"
 
-
 //Only for debug, normally should not 
 //   include private header
 #include "FreeRTOS_IP_Private.h"
 
+#define ACCELERATE_LED_GPIO 23
+
+#define TASK_DELAY 1000
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-void task1() {
+void task() {
 	int i = 0;
 	while(1) {
-		i++;
-		SetGpio(47, 1);
-		vTaskDelay(200);
-	}
-}
-
-void task2() {
-	int i = 0;
-	while(1) {
-		i++;
-		vTaskDelay(100);
-		SetGpio(47, 0);
-		vTaskDelay(100);
+		i = i ? 0 : 1;
+		SetGpio(ACCELERATE_LED_GPIO, i);
+		vTaskDelay(TASK_DELAY);
 	}
 }
 
@@ -317,10 +308,10 @@ uint8_t *pucRxBuffer;
 
 
 int main(void) {
-	SetGpioFunction(47, 1);			// RDY led
+	SetGpioFunction(ACCELERATE_LED_GPIO, 1);			// RDY led
 
 	initFB();
-	SetGpio(47, 1);
+	SetGpio(ACCELERATE_LED_GPIO, 1);
 	//videotest();
 
 	DisableInterrupts();
@@ -339,8 +330,7 @@ int main(void) {
 	//xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
 	xTaskCreate(serverListenTask, "server", 128, NULL, 0, NULL);
 
-	xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
-	xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);
+	xTaskCreate(task, "LED_0", 128, NULL, 0, NULL);
 
 	//set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
 	loaded = 1;
