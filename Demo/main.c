@@ -322,11 +322,15 @@ uint8_t *pucRxBuffer;
 }
 
 int main(void) {
-	SetGpioFunction(ACCELERATE_LED_GPIO, 1);			// RDY led
+	SetGpioFunction(ACCELERATE_LED_GPIO, 1);
+	SetGpioFunction(BRAKE_LED_GPIO, 1);
+	SetGpioFunction(CLUTCH_LED_GPIO, 1);	
 
 	initFB();
+
 	SetGpio(ACCELERATE_LED_GPIO, 1);
-	//videotest();
+	SetGpio(BRAKE_LED_GPIO, 1);
+	SetGpio(CLUTCH_LED_GPIO, 1);
 
 	DisableInterrupts();
 	InitInterruptController();
