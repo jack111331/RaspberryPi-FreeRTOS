@@ -17,6 +17,12 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
    make
    ```
 
+   Alternatively, you can use the deploy script: (make && make clean)
+
+   ```
+   ./deploy
+   ```
+
    If you don't need to change any source files, you can use the pre-built
    kernel7.img file in the root directory.
 
@@ -33,3 +39,29 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
    between 1 ... 5 seconds depending on the LEDs you have connected.
 
    Optional: You can connect Raspberry to a monitor with HDMI to see some output.
+
+---
+
+Research links from Forty-Tw0's RESEARCH file:
+
+bare metal USB driver for RPI with ARP example (current port)
+https://github.com/rsta2/uspi
+https://www.raspberrypi.org/forums/viewtopic.php?f=72&t=92579
+
+https://github.com/xinu-os/xinu/tree/master/device/smsc9512
+
+http://www.pebblebay.com/raspberry-pi-embedded/
+The RPI1 has:
+– A USB host controller driver for the Synopsys DesignWare USB 2.0 OTG
+controller embedded in the processor
+– A USB host stack with USB networking infrastructure
+– A device driver for LAN9512/4 Ethernet controller
+Might be similar to the RPI 2?
+
+https://github.com/Chadderz121/csud
+
+TCP/UDP/IP RTOS
+http://www.nxp.com/files/microcontrollers/doc/app_note/AN3470.pdf
+
+datasheet Synopsys DesignWare USB 2.0 OTG
+http://www.quicklogic.com/assets/pdf/data-sheets/QL-Hi-Speed-USB-2.0-OTG-Controller-Data-Sheet.pdf#G1163015
