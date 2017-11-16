@@ -30,25 +30,25 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-void task(int delay) {
+void task(int pin, int delay) {
 	int i = 0;
 	while(1) {
 		i = i ? 0 : 1;
-		SetGpio(ACCELERATE_LED_GPIO, i);
+		SetGpio(pin, i);
 		vTaskDelay(delay);
 	}
 }
 
 void taskAccelerate() {
-	task(ACCELERATE_TASK_DELAY);
+	task(ACCELERATE_LED_GPIO, ACCELERATE_TASK_DELAY);
 }
 
 void taskBrake() {
-	task(BRAKE_TASK_DELAY);
+	task(BRAKE_LED_GPIO, BRAKE_TASK_DELAY);
 }
 
 void taskClutch() {
-	task(CLUTCH_TASK_DELAY);
+	task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
 //server task does not work in this build, it fails to accept a connection
