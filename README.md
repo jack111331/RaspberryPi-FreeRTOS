@@ -30,6 +30,12 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
 
 4. Move bootcode.bin, config.txt, start.elf and kernel7.img to the SD card.
 
+   SD card folder structure:
+   - bootcode.bin
+   - config.txt
+   - kernel7.img
+   - start.elf
+
 5. Refer to led_pins.txt on connecting the LEDs to Raspberry's GPIO pins.
    Raspberry Pi 3 GPIO pin layout:
    https://openclipart.org/image/2400px/svg_to_png/280972/gpiopinsv3withpi.png
