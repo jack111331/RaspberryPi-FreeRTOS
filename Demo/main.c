@@ -1,7 +1,9 @@
-//main.c
-//authored by Jared Hull
+// main.c
+// Authored by Jared Hull
+// Modified by Roope Lindström & Emil Pirinen
 //
-//main initialises the devices and IP tasks
+// Main initialises the devices
+// Tasks simulate car lights
 
 #include <FreeRTOS.h>
 #include <task.h>
@@ -17,20 +19,37 @@
 #include "FreeRTOS_IP_Private.h"
 
 #define ACCELERATE_LED_GPIO 23
+#define BRAKE_LED_GPIO 		24
+#define CLUTCH_LED_GPIO 	16
 
-#define TASK_DELAY 1000
+#define TASK_DELAY				1000
+#define ACCELERATE_TASK_DELAY 	1000
+#define BRAKE_TASK_DELAY 		2000
+#define CLUTCH_TASK_DELAY 		5000
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-void task() {
+void task(int delay = TASK_DELAY) {
 	int i = 0;
 	while(1) {
 		i = i ? 0 : 1;
 		SetGpio(ACCELERATE_LED_GPIO, i);
-		vTaskDelay(TASK_DELAY);
+		vTaskDelay(delay);
 	}
+}
+
+void taskAccelerate() {
+	task(ACCELERATE_TASK_DELAY);
+}
+
+void taskBrake() {
+	task(BRAKE_TASK_DELAY);
+}
+
+void taskClutch() {
+	task(CLUTCH_TASK_DELAY);
 }
 
 //server task does not work in this build, it fails to accept a connection
@@ -303,10 +322,6 @@ uint8_t *pucRxBuffer;
 	vTaskDelete( NULL );
 }
 
-
-
-
-
 int main(void) {
 	SetGpioFunction(ACCELERATE_LED_GPIO, 1);			// RDY led
 
@@ -330,7 +345,9 @@ int main(void) {
 	//xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
 	xTaskCreate(serverListenTask, "server", 128, NULL, 0, NULL);
 
-	xTaskCreate(task, "LED_0", 128, NULL, 0, NULL);
+	xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
+	xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
+	xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
 
 	//set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
 	loaded = 1;
