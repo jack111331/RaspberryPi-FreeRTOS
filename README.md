@@ -15,6 +15,15 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
    ./deploy
    ```
 
+   If you get errors, make sure you have the following packages installed:
+
+   ```
+   sudo apt-get install make
+   sudo apt-get install build-essential
+   sudo apt-get install gcc-arm-none-eabi
+   sudo apt-get install python
+   ```
+
    This will copy and replace the kernel7.img file in the SD_Example directory
    after making a clean build
 
@@ -30,6 +39,13 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
    - config.txt
    - kernel7.img
    - start.elf
+
+   If you're using the Windows 10 Linux Bash,
+   your home directory can be found in the following path:
+
+   ```
+   %LocalAppData%\lxss\home\YOUR_USERNAME\
+   ```
 
 5. Refer to led_pins.txt on connecting the LEDs to Raspberry's GPIO pins.
    Raspberry Pi 3 GPIO pin layout:
