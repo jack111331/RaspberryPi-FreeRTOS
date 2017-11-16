@@ -7,18 +7,18 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
 
 1. Clone this repository:
 
-```git clone https://github.com/rooperl/RaspberryPi-FreeRTOS```
+   ```git clone https://github.com/rooperl/RaspberryPi-FreeRTOS```
 
 2. Run make in the root directory to build a kernel image file:
 
-```
-cd RaspberryPi-FreeRTOS
-make clean
-make
-```
+   ```
+   cd RaspberryPi-FreeRTOS
+   make clean
+   make
+   ```
 
-If you don't need to change any source files, you can use the pre-built
-kernel7.img file in the root directory.
+   If you don't need to change any source files, you can use the pre-built
+   kernel7.img file in the root directory.
 
 3. Format an SD card with the FAT32 filesystem.
 
