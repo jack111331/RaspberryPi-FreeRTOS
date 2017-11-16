@@ -7,5 +7,5 @@ brake
 	output	18 (gpio 24)
 
 clutch
-	gnd	34
-	output	36 (gpio 16)
+	gnd	30
+	output	22 (gpio 25)
