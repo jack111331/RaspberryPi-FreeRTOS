@@ -3,6 +3,8 @@
 Fork from Forty-Tw0's RPi 2 FreeRTOS build
 https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
 
+![Raspberry](https://i.imgur.com/B4ZHSQB.jpg)
+
 ---
 
 1. Clone this repository:
