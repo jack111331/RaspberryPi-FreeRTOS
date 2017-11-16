@@ -1,0 +1,3 @@
+# Ignore client files for now
+client
+client.c
