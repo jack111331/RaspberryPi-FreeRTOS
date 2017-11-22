@@ -1,3 +1,5 @@
-# Ignore client files for now
-# client
-# client.c
+kernel.elf
+kernel.list
+kernel.map
+kernel.syms
+build/
