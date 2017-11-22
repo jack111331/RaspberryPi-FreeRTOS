@@ -30,6 +30,8 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
+static void prvServerConnectionInstance(void *pvParameters);
+
 void task(int pin, int delay) {
 	int i = 0;
 	while(1) {
@@ -145,7 +147,8 @@ void serverListenTask(){
             for ( ;; ) {
                 //Only seem to be able to spawn one client task that works.  Additional client tasks don't work. 
                 println("Server task accepting", BLUE_TEXT);
-                printHex("Serv sock TCP State: ", (unsigned int)sockt->u.xTCP.ucTCPState, BLUE_TEXT);
+		println("CREATE_SOCK_TASK defined", GREEN_TEXT);
+                // printHex("Serv sock TCP State: ", (unsigned int)sockt->u.xTCP.ucTCPState, BLUE_TEXT);
 	        Socket_t connect_sock = FreeRTOS_accept(listen_sock, (struct freertos_sockaddr*)&client, &cli_size);
                 println("    accepted", BLUE_TEXT);
 
