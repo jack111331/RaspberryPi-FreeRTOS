@@ -184,7 +184,6 @@ void serverListenTask(){
                             lTotalSent += lSent;
                         }
                         // if (lSent < 0) break;
-
                     }
 
                     FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
@@ -193,25 +192,22 @@ void serverListenTask(){
                     returning an error. */
                     xTimeOnShutdown = xTaskGetTickCount();
 
+		    println("Waiting for shutdown", GREEN_TEXT);
+
 	            do {
 		        if(FreeRTOS_recv( connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0) < 0) break;
 	            } while((xTaskGetTickCount() - xTimeOnShutdown) < tcpechoSHUTDOWN_DELAY);
 
+		    println("Shutdown successful", GREEN_TEXT);
+
                     vPortFree(pucRxBuffer);
                     FreeRTOS_closesocket(connect_sock);
 
-                    break;
+		    println("Socket closed", GREEN_TEXT);
+
+                    // break;
             	}
             #endif
-	/*
-        #ifndef CREATE_SOCK_TASK
-        vTaskDelay( xDelay8s );
-        for (;;) {
-            println("Srv Tsk spin", BLUE_TEXT);
-            vTaskDelay( xDelay8s );
-        }
-        #endif
-	*/
 }
 
 
