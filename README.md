@@ -25,6 +25,12 @@ https://github.com/Forty-Tw0/RaspberryPi-FreeRTOS
    sudo apt-get install gcc-arm-none-eabi
    sudo apt-get install python
    ```
+   If you still get errors, make sure you have the right paths and version numbers. 
+   You need to modify the arm-non-eabi- toolchain locations in the Makefile:
+   ```
+   kernel.elf: LDFLAGS += -L"/usr/lib/gcc/arm-none-eabi/4.9.3" -lgcc
+   kernel.elf: LDFLAGS += -L"/usr/lib/arm-none-eabi/lib" -lc
+   ```
 
    This will copy and replace the kernel7.img file in the SD_Example directory
    after making a clean build
