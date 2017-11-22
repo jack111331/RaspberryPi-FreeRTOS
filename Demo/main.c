@@ -51,43 +51,9 @@ void taskClutch() {
 	task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
-//server task does not work in this build, it fails to accept a connection
-void serverTask(){
-	//setup a socket structure
-	Socket_t listenfd = FreeRTOS_socket(FREERTOS_AF_INET, FREERTOS_SOCK_STREAM, FREERTOS_IPPROTO_TCP);
-	struct freertos_sockaddr server, client;
-	server.sin_port = FreeRTOS_htons(4242);
-	server.sin_addr = FreeRTOS_inet_addr("192.168.1.42");
-
-
-        socklen_t cli_size = sizeof(client);
-
-	FreeRTOS_bind(listenfd, (struct freertos_sockaddr*)&server, sizeof(server));
-	FreeRTOS_listen(listenfd, 3);
-
-	while(1){
-loaded = 2;
-		Socket_t connectfd = FreeRTOS_accept(listenfd, (struct freertos_sockaddr*)&client, &cli_size);
-loaded = 1;
-println("    accepted", 0xFFFFFFFF);
-		char recieved[9000];
-		FreeRTOS_recv(connectfd, recieved, 9000, 0);
-		println(recieved, 0xFFFFFFFF);
-
-		char *message = "Forty-Two";
-		FreeRTOS_send(connectfd, message, sizeof(message), 0);
-		println(message, 0xFFFFFFFF);
-
-		FreeRTOS_shutdown(connectfd, FREERTOS_SHUT_RDWR);
-	}
-	FreeRTOS_shutdown(listenfd, FREERTOS_SHUT_RDWR);
-}
-
-
-
-#undef CREATE_SOCK_TASK
+// #undef CREATE_SOCK_TASK
+#define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY	( pdMS_TO_TICKS( 5000 ) )
-
 
 //server task DOES work in this build, it DOES accept a connection
 void serverListenTask(){
@@ -296,6 +262,7 @@ uint8_t *pucRxBuffer;
 			{
 				/* Socket closed? */
 				break;
+				
 			}
 		}
 	}
