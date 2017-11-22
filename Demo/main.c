@@ -7,6 +7,7 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
+#include <string.h>
 
 #include "interrupts.h"
 #include "gpio.h"
@@ -53,8 +54,8 @@ void taskClutch() {
 	task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
-// #undef CREATE_SOCK_TASK
-#define CREATE_SOCK_TASK
+#undef CREATE_SOCK_TASK
+// #define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY	( pdMS_TO_TICKS( 5000 ) )
 
 //server task DOES work in this build, it DOES accept a connection
@@ -150,7 +151,7 @@ void serverListenTask(){
 		println("CREATE_SOCK_TASK defined", GREEN_TEXT);
                 // printHex("Serv sock TCP State: ", (unsigned int)sockt->u.xTCP.ucTCPState, BLUE_TEXT);
 	        Socket_t connect_sock = FreeRTOS_accept(listen_sock, (struct freertos_sockaddr*)&client, &cli_size);
-                println("    accepted", BLUE_TEXT);
+                println("Connection accepted", BLUE_TEXT);
 
                 xTaskCreate( prvServerConnectionInstance, "EchoServer", 4096, ( void * ) connect_sock, tskIDLE_PRIORITY, NULL );
             }
@@ -158,7 +159,7 @@ void serverListenTask(){
             
             println("Server task accepting", BLUE_TEXT);
 	    Socket_t connect_sock = FreeRTOS_accept(listen_sock, (struct freertos_sockaddr*)&client, &cli_size);
-            println("    accepted", BLUE_TEXT);
+            println("Connection accepted", BLUE_TEXT);
             
 	    pucRxBuffer = ( uint8_t * ) pvPortMalloc( ipconfigTCP_MSS );
                 for ( ;; ) {
@@ -166,40 +167,43 @@ void serverListenTask(){
                     if (  (lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0) {
                         printHex("Chars Received: ", (unsigned int)lBytes, BLUE_TEXT);
                         println(pucRxBuffer, BLUE_TEXT);
+
                         lSent = 0;
                         lTotalSent = 0;
-                        while ((lSent >= 0) && (lTotalSent < lBytes)) {
-                            lSent = FreeRTOS_send(connect_sock, pucRxBuffer, lBytes-lTotalSent, 0);
-                            lTotalSent += lSent;  
+
+			uint8_t* messageBuffer = "From server: ";
+			int32_t messageBytes = sizeof(uint8_t) * strlen((char*)messageBuffer);
+			int32_t totalBytes = lBytes + messageBytes;
+
+			uint8_t* totalBuffer = (uint8_t*)malloc(totalBytes + 1);
+			strcpy(totalBuffer, messageBuffer);
+			strcat(totalBuffer, pucRxBuffer);
+
+                        while ((lSent >= 0) && (lTotalSent < totalBytes)) {
+                            lSent = FreeRTOS_send(connect_sock, totalBuffer, totalBytes - lTotalSent, 0);
+                            lTotalSent += lSent;
                         }
-                        if (lSent < 0)
-                            break;
+                        // if (lSent < 0) break;
+
                     }
-                    else {
-                        FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
-                        /* Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
-                        returning an error. */
-                        xTimeOnShutdown = xTaskGetTickCount();
-	                do
-	                {
-		            if( FreeRTOS_recv( connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0 ) < 0 )
-		            {
-			        break;
-		            }
-	                } while( ( xTaskGetTickCount() - xTimeOnShutdown ) < tcpechoSHUTDOWN_DELAY );
+                    FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
-                        vPortFree( pucRxBuffer );
-                        FreeRTOS_closesocket( connect_sock );
+                    /* Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
+                    returning an error. */
+                    xTimeOnShutdown = xTaskGetTickCount();
 
-                        break;
-                    } 
-                }
-            
-            
+	            do {
+		        if(FreeRTOS_recv( connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0) < 0) break;
+	            } while((xTaskGetTickCount() - xTimeOnShutdown) < tcpechoSHUTDOWN_DELAY);
+
+                    vPortFree(pucRxBuffer);
+                    FreeRTOS_closesocket(connect_sock);
+
+                    break;
+            	}
             #endif
-
-
+	/*
         #ifndef CREATE_SOCK_TASK
         vTaskDelay( xDelay8s );
         for (;;) {
@@ -207,7 +211,7 @@ void serverListenTask(){
             vTaskDelay( xDelay8s );
         }
         #endif
-
+	*/
 }
 
 
@@ -307,12 +311,12 @@ int main(void) {
 
 	//ensure the IP and gateway match the router settings!
 	//const unsigned char ucIPAddress[ 4 ] = {192, 168, 1, 42};
-	const unsigned char ucIPAddress[ 4 ] = {192, 168, 1, 9};
+	const unsigned char ucIPAddress[ 4 ] = {10, 10, 206, 100 };
 	const unsigned char ucNetMask[ 4 ] = {255, 255, 255, 0};
-	const unsigned char ucGatewayAddress[ 4 ] = {192, 168, 1, 1};
-	const unsigned char ucDNSServerAddress[ 4 ] = {8, 8, 8, 8};
+	const unsigned char ucGatewayAddress[ 4 ] = {10, 10, 206, 1};
+	const unsigned char ucDNSServerAddress[ 4 ] = {10, 10, 206, 1};
 	//const unsigned char ucMACAddress[ 6 ] = {0xB8, 0x27, 0xEB, 0x19, 0xAD, 0xA7};
-	const unsigned char ucMACAddress[ 6 ] = {0xB8, 0x27, 0xEB, 0xa5, 0x35, 0xC1};
+	const unsigned char ucMACAddress[ 6 ] = {0xB8, 0x27, 0xEB, 0xA0, 0xE8, 0x54};
 	FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
 	//xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
@@ -325,6 +329,8 @@ int main(void) {
 	//set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
 	loaded = 1;
 
+	println("Starting task scheduler", GREEN_TEXT);
+
 	vTaskStartScheduler();
 
 	/*
@@ -335,3 +341,4 @@ int main(void) {
 		;
 	}
 }
+
