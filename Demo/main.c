@@ -8,7 +8,6 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "interrupts.h"
 #include "gpio.h"
@@ -73,9 +72,9 @@ uint8_t* intToString(unsigned n) {
     unsigned i2 = (n % 100) / 10;
     unsigned i3 = n % 10;
 
-    if (i1) strcat(str, (char)(i1 + 48));
-    if (i2 || i1) strcat(str, (char)(i2 + 48));
-    if (i3 || i2 || i1) strcat(str, (char)(i3 + 48));
+    if (i1) strcat(str, &((char)(i1 + 48)));
+    if (i2 || i1) strcat(str, &((char)(i2 + 48)));
+    if (i3 || i2 || i1) strcat(str, &((char)(i3 + 48)));
 
     return str;
 }
