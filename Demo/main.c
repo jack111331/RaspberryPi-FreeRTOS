@@ -80,8 +80,8 @@ uint8_t* intToString(unsigned n) {
     uint8_t *s2 = &c2;
     uint8_t *s3 = &c3;
 
-    strcat(str, i1 ? s1 : ' ');
-    strcat(str, (i2 || i1) ? s2 : ' ');
+    strcat(str, i1 ? s1 : " ");
+    strcat(str, (i2 || i1) ? s2 : " ");
     strcat(str, s3);
 
     return str;
