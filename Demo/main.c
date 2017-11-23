@@ -153,7 +153,7 @@ void serverListenTask()
 
     println("Server task accepting", BLUE_TEXT);
     Socket_t connect_sock = FreeRTOS_accept(listen_sock, (struct freertos_sockaddr *)&client, &cli_size);
-    println("Connection accepted", BLUE_TEXT);
+    println("Connection accepted", ORANGE_TEXT);
 
     pucRxBuffer = (uint8_t *)pvPortMalloc(ipconfigTCP_MSS);
     for (;;)
@@ -161,8 +161,8 @@ void serverListenTask()
         memset(pucRxBuffer, 0x00, ipconfigTCP_MSS);
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
         {
-            printHex("Chars Received: ", (unsigned int)lBytes, BLUE_TEXT);
-            println(pucRxBuffer, BLUE_TEXT);
+            printHex("Chars Received: ", (unsigned int)lBytes, ORANGE_TEXT);
+            println(pucRxBuffer, RED_TEXT);
 
             lSent = 0;
             lTotalSent = 0;
