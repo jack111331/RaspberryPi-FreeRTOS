@@ -66,10 +66,10 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
-void changeTaskState(int& state, xTaskHandle& handle) {
-    if (state) vTaskSuspend(handle);
-    else vTaskResume(state);
-    state = state ? 0 : 1;
+void changeTaskState(int *state, xTaskHandle *handle) {
+    if (*state) vTaskSuspend(*handle);
+    else vTaskResume(*state);
+    *state = *state ? 0 : 1;
 }
 
 int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
