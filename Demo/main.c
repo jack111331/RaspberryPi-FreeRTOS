@@ -67,8 +67,8 @@ void taskClutch()
 }
 
 void changeTaskState(int *state, xTaskHandle *handle) {
-    if (*state) vTaskSuspend(*handle);
-    else vTaskResume(*state);
+    if (*state) vTaskSuspend(handle);
+    else vTaskResume(state);
     *state = *state ? 0 : 1;
 }
 
