@@ -81,17 +81,11 @@ uint8_t* intToString(unsigned n) {
     uint8_t *s2 = &c2;
     uint8_t *s3 = &c3;
 
-    println(s1, ORANGE_TEXT);
-    println(s2, ORANGE_TEXT);
-    println(s3, ORANGE_TEXT);
+    strncat(str, i1 ? s1 : empty, 1);
+    strncat(str, (i2 || i1) ? s2 : empty, 1);
+    strncat(str, s3, 1);
 
-    // strcat(str, i1 ? s1 : empty);
-    // strcat(str, (i2 || i1) ? s2 : empty);
-    // strcat(str, s3);
-
-
-
-    return "";
+    return str;
 }
 
 void driveTask() {
