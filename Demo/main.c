@@ -72,7 +72,7 @@ void changeTaskState(int& state, xTaskHandle& handle) {
     state = state ? 0 : 1;
 }
 
-int checkCommand(uint8_t cmd1, uint8_t cmd2) {
+int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
     return !strncmp(cmd1, cmd2, strlen((char *)cmd2));
 }
 
