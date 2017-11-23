@@ -66,7 +66,7 @@ void taskClutch()
 
 void driveTask() {
     while (1) {
-        char velocityStr[4];
+        char *velocityStr = malloc(64);
 
         velocity++;
 
