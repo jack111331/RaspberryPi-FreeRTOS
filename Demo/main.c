@@ -60,6 +60,16 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
+void runCommand(uint8_t cmd) {
+    if (cmd == "acc") {
+        TaskHandle_t handle = xTaskGetHandle("LED_A");
+
+        if (!handle) {
+            xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
+        } else vTaskDelete(handle);
+    }
+}
+
 #undef CREATE_SOCK_TASK
 // #define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY (pdMS_TO_TICKS(5000))
@@ -162,6 +172,7 @@ void serverListenTask()
         memset(pucRxBuffer, 0x00, ipconfigTCP_MSS);
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
         {
+            runCommand(pucRxBuffer);
             printHex("Chars Received: ", (unsigned int)lBytes, ORANGE_TEXT);
             println(pucRxBuffer, RED_TEXT);
 
@@ -244,12 +255,12 @@ int main(void)
     //xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
 
-    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
-    xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
-    xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
+    // xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
+    // xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
+    // xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
 
     //set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
-    loaded = 0;
+    loaded = 1;
 
     println("Starting task scheduler", GREEN_TEXT);
 
