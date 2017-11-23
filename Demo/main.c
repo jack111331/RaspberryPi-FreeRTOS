@@ -31,8 +31,8 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-xTaskHandle* acc;
-int accState = 0;
+xTaskHandle acc;
+int accState = 1;
 
 void task(int pin, int delay)
 {
@@ -251,11 +251,8 @@ int main(void)
     const unsigned char ucMACAddress[6] = {0xB8, 0x27, 0xEB, 0xA0, 0xE8, 0x54};
     FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
-    //xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
-
-    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, acc);
-    // vTaskSuspend(acc);
+    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, &acc);
     // xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
     // xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
 
