@@ -170,11 +170,10 @@ void serverListenTask(){
                 // if (lSent < 0) break;
             }
 
-            /*
             FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
-            // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
-            // returning an error.
+            Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
+            returning an error.
             xTimeOnShutdown = xTaskGetTickCount();
 
 		    println("Waiting for shutdown", GREEN_TEXT);
@@ -189,7 +188,6 @@ void serverListenTask(){
                     FreeRTOS_closesocket(connect_sock);
 
             println("Socket closed", GREEN_TEXT);
-            */
         // break;
     	}
 }
