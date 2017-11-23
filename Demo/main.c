@@ -71,8 +71,6 @@ void serverListenTask(){
         // for debug 
         FreeRTOS_Socket_t * sockt;
 
-	//setup a socket structure
-        //loaded = 2;
         //printAddressConfiguration();
         volatile int times = 10; 
         println("Server task starting", BLUE_TEXT);
@@ -143,23 +141,9 @@ void serverListenTask(){
         int clients = 0;
         int32_t lBytes, lSent, lTotalSent;
 
-
-            #ifdef CREATE_SOCK_TASK
-            for ( ;; ) {
-                //Only seem to be able to spawn one client task that works.  Additional client tasks don't work. 
-                println("Server task accepting", BLUE_TEXT);
-		println("CREATE_SOCK_TASK defined", GREEN_TEXT);
-                // printHex("Serv sock TCP State: ", (unsigned int)sockt->u.xTCP.ucTCPState, BLUE_TEXT);
-	        Socket_t connect_sock = FreeRTOS_accept(listen_sock, (struct freertos_sockaddr*)&client, &cli_size);
-                println("Connection accepted", BLUE_TEXT);
-
-                xTaskCreate( prvServerConnectionInstance, "EchoServer", 4096, ( void * ) connect_sock, tskIDLE_PRIORITY, NULL );
-            }
-            #else
-            
-            println("Server task accepting", BLUE_TEXT);
+        println("Server task accepting", BLUE_TEXT);
 	    Socket_t connect_sock = FreeRTOS_accept(listen_sock, (struct freertos_sockaddr*)&client, &cli_size);
-            println("Connection accepted", BLUE_TEXT);
+        println("Connection accepted", BLUE_TEXT);
             
 	    pucRxBuffer = ( uint8_t * ) pvPortMalloc( ipconfigTCP_MSS );
                 for ( ;; ) {
@@ -179,18 +163,19 @@ void serverListenTask(){
 			strcpy(totalBuffer, messageBuffer);
 			strcat(totalBuffer, pucRxBuffer);
 
-                        while ((lSent >= 0) && (lTotalSent < totalBytes)) {
-                            lSent = FreeRTOS_send(connect_sock, totalBuffer, totalBytes - lTotalSent, 0);
-                            lTotalSent += lSent;
-                        }
-                        // if (lSent < 0) break;
-                    }
+                while ((lSent >= 0) && (lTotalSent < totalBytes)) {
+                    lSent = FreeRTOS_send(connect_sock, totalBuffer, totalBytes - lTotalSent, 0);
+                    lTotalSent += lSent;
+                }
+                // if (lSent < 0) break;
+            }
 
-                    FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
+            /*
+            FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
-                    /* Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
-                    returning an error. */
-                    xTimeOnShutdown = xTaskGetTickCount();
+            // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
+            // returning an error.
+            xTimeOnShutdown = xTaskGetTickCount();
 
 		    println("Waiting for shutdown", GREEN_TEXT);
 
@@ -203,92 +188,10 @@ void serverListenTask(){
                     vPortFree(pucRxBuffer);
                     FreeRTOS_closesocket(connect_sock);
 
-		    println("Socket closed", GREEN_TEXT);
-
-                    // break;
-            	}
-            #endif
-}
-
-
-
-static void prvServerConnectionInstance( void *pvParameters )
-{
-int32_t lBytes, lSent, lTotalSent;
-Socket_t xConnectedSocket;
-static const portTickType xReceiveTimeOut = pdMS_TO_TICKS( 5000 );
-static const portTickType xSendTimeOut = pdMS_TO_TICKS( 5000 );
-portTickType xTimeOnShutdown;
-uint8_t *pucRxBuffer;
-
-	xConnectedSocket = ( Socket_t ) pvParameters;
-
-	/* Attempt to create the buffer used to receive the string to be echoed
-	back.  This could be avoided using a zero copy interface that just returned
-	the same buffer. */
-	pucRxBuffer = ( uint8_t * ) pvPortMalloc( ipconfigTCP_MSS );
-
-	if( pucRxBuffer != NULL )
-	{
-		FreeRTOS_setsockopt( xConnectedSocket, 0, FREERTOS_SO_RCVTIMEO, &xReceiveTimeOut, sizeof( xReceiveTimeOut ) );
-		FreeRTOS_setsockopt( xConnectedSocket, 0, FREERTOS_SO_SNDTIMEO, &xSendTimeOut, sizeof( xReceiveTimeOut ) );
-
-		for( ;; )
-		{
-			/* Zero out the receive array so there is NULL at the end of the string
-			when it is printed out. */
-			memset( pucRxBuffer, 0x00, ipconfigTCP_MSS );
-
-			/* Receive data on the socket. */
-			lBytes = FreeRTOS_recv( xConnectedSocket, pucRxBuffer, ipconfigTCP_MSS, 0 );
-
-			/* If data was received, echo it back. */
-			if( lBytes >= 0 )
-			{
-				lSent = 0;
-				lTotalSent = 0;
-
-				/* Call send() until all the data has been sent. */
-				while( ( lSent >= 0 ) && ( lTotalSent < lBytes ) )
-				{
-					lSent = FreeRTOS_send( xConnectedSocket, pucRxBuffer, lBytes - lTotalSent, 0 );
-					lTotalSent += lSent;
-				}
-
-				if( lSent < 0 )
-				{
-					/* Socket closed? */
-					break;
-				}
-			}
-			else
-			{
-				/* Socket closed? */
-				break;
-				
-			}
-		}
-	}
-
-	/* Initiate a shutdown in case it has not already been initiated. */
-	FreeRTOS_shutdown( xConnectedSocket, FREERTOS_SHUT_RDWR );
-
-	/* Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
-	returning an error. */
-	xTimeOnShutdown = xTaskGetTickCount();
-	do
-	{
-		if( FreeRTOS_recv( xConnectedSocket, pucRxBuffer, ipconfigTCP_MSS, 0 ) < 0 )
-		{
-			break;
-		}
-	} while( ( xTaskGetTickCount() - xTimeOnShutdown ) < tcpechoSHUTDOWN_DELAY );
-
-	/* Finished with the socket, buffer, the task. */
-	vPortFree( pucRxBuffer );
-	FreeRTOS_closesocket( xConnectedSocket );
-
-	vTaskDelete( NULL );
+            println("Socket closed", GREEN_TEXT);
+            */
+        // break;
+    	}
 }
 
 int main(void) {
