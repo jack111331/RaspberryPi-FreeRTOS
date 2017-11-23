@@ -89,18 +89,21 @@ uint8_t* intToString(unsigned n) {
 }
 
 void driveTask() {
+    vTaskDelay(5000);
+
     while (1) {
+        velocity++;
+
         if (velocity != prevVelocity) {
             uint8_t *velocityStr = malloc(256);
-            
+
             strcat(velocityStr, "Velocity: ");
             strcat(velocityStr, intToString(velocity));
             strcat(velocityStr, " km/h");
 
-            println(, WHITE_TEXT);
+            println(velocityStr, WHITE_TEXT);
         }
 
-        velocity++;
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
     }
