@@ -61,8 +61,11 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
-void runCommand(uint8_t* cmd) {
-    uint8_t* cmdAcc = "acc";
+void runCommand(uint8_t *cmd) {
+    uint8_t *cmdAcc = "acc";
+    
+    println(cmd, AQUA_TEXT);
+    println(cmdAcc, AQUA_TEXT);
 
     if (!strcmp(cmd, cmdAcc)) {
         if (accState) vTaskSuspend(acc);
