@@ -172,8 +172,8 @@ void serverListenTask(){
 
             FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
-            Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
-            returning an error.
+            // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
+            // returning an error.
             xTimeOnShutdown = xTaskGetTickCount();
 
 		    println("Waiting for shutdown", GREEN_TEXT);
