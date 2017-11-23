@@ -66,7 +66,7 @@ void taskClutch()
 uint8_t* intToString(unsigned n) {
     if (n > 999) return "NULL";
 
-    uint8_t *str = malloc(4);
+    uint8_t *str = memcpy()
     uint8_t *empty = " ";
 
     int i1 = n / 100;
@@ -85,7 +85,9 @@ uint8_t* intToString(unsigned n) {
     strncat(str, (i2 || i1) ? s2 : empty, 1);
     strncat(str, s3, 1);
 
-    return str;
+    println(str);
+
+    return "";
 }
 
 void driveTask() {
