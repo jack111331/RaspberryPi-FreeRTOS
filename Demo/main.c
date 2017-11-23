@@ -58,12 +58,6 @@ void taskClutch() {
 // #define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY	( pdMS_TO_TICKS( 5000 ) )
 
-void serverLoop() {
-    while (1) {
-        serverListenTask();
-    }
-}
-
 //server task DOES work in this build, it DOES accept a connection
 void serverListenTask(){
         int status = 0;
@@ -198,6 +192,12 @@ void serverListenTask(){
             */
         // break;
     	}
+}
+
+void serverLoop() {
+    while (1) {
+        serverListenTask();
+    }
 }
 
 int main(void) {
