@@ -40,8 +40,8 @@ int accState = 0;
 int brakeState = 0;
 int clutchState = 0;
 
-int velocity = 0;
-int prevVelocity = 0;
+unsigned velocity = 0;
+unsigned prevVelocity = 0;
 
 void task(int pin, int *state)
 {
@@ -64,15 +64,30 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, &clutchState);
 }
 
+uint8_t* intToString(unsigned n) {
+    if (i > 999) return "NULL";
+
+    uint8_t *str = malloc(16);
+
+    unsigned i1 = n / 100;
+    unsigned i2 = (n % 100) / 10;
+    unsigned i3 = n % 10;
+
+    if (i1) strcat(str, (char)(i1 + 48));
+    if (i2 || i1) strcat(str, (char)(i2 + 48));
+    if (i3 || i2 || i1) strcat(str, (char)(i3 + 48));
+
+    return str;
+}
+
 void driveTask() {
     while (1) {
-        char *velocityStr = "Velocity: 0000 km/h";
+        char *velocityStr = malloc(32);
 
         velocity++;
 
         if (velocity != prevVelocity) {
-            snprintf(velocityStr, 19 "Velocity: %d km/h", velocity);
-            println(velocityStr, WHITE_TEXT);
+            println(intToString(velocity), WHITE_TEXT);
         }
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
