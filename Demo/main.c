@@ -72,7 +72,7 @@ void driveTask() {
 
         if (velocity != prevVelocity) {
             sprintf(velocityStr, "Velocity: %d km/h", velocity);
-            println(velocityStr);
+            println(velocityStr, WHITE_TEXT);
         }
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
