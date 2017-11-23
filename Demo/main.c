@@ -58,6 +58,12 @@ void taskClutch() {
 // #define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY	( pdMS_TO_TICKS( 5000 ) )
 
+void serverLoop() {
+    while (1) {
+        serverListenTask();
+    }
+}
+
 //server task DOES work in this build, it DOES accept a connection
 void serverListenTask(){
         int status = 0;
@@ -219,7 +225,7 @@ int main(void) {
 	FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
 	//xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
-	xTaskCreate(serverListenTask, "server", 128, NULL, 0, NULL);
+	xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
 
 	xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
 	xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
