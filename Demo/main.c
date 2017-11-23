@@ -8,7 +8,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <string.h>
-#include <stdlib.h>
+#include <stdio.h>
 
 #include "interrupts.h"
 #include "gpio.h"
@@ -66,8 +66,14 @@ void taskClutch()
 
 void driveTask() {
     while (1) {
+        char velocityStr[4];
+
         velocity++;
-        if (velocity != prevVelocity) println(itoa(velocity));
+
+        if (velocity != prevVelocity) {
+            sprintf(velocityStr, "Velocity: %d km/h", velocity);
+            println(velocityStr);
+        }
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
     }
