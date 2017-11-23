@@ -63,11 +63,8 @@ void taskClutch()
 
 void runCommand(uint8_t *cmd) {
     uint8_t *cmdAcc = "acc";
-    
-    println(cmd, AQUA_TEXT);
-    println(cmdAcc, AQUA_TEXT);
 
-    if (!strcmp(cmd, cmdAcc)) {
+    if (!strncmp(cmd, cmdAcc, strlen((char *)cmdAcc))) {
         if (accState) vTaskSuspend(acc);
         else vTaskResume(acc);
         accState = accState ? 0 : 1;
