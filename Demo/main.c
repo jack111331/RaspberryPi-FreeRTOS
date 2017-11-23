@@ -67,6 +67,7 @@ uint8_t* intToString(unsigned n) {
     if (n > 999) return "NULL";
 
     uint8_t *str = malloc(4);
+    uint8_t *empty = " ";
 
     int i1 = n / 100;
     int i2 = (n % 100) / 10;
@@ -80,8 +81,8 @@ uint8_t* intToString(unsigned n) {
     uint8_t *s2 = &c2;
     uint8_t *s3 = &c3;
 
-    strcat(str, i1 ? s1 : " ");
-    strcat(str, (i2 || i1) ? s2 : " ");
+    strcat(str, i1 ? s1 : empty);
+    strcat(str, (i2 || i1) ? s2 : empty);
     strcat(str, s3);
 
     return str;
