@@ -66,7 +66,7 @@ void taskClutch()
 
 void driveTask() {
     while (1) {
-        char velocityStr = malloc(64);
+        char *velocityStr = "Velocity: 0000 km/h";
 
         velocity++;
 
