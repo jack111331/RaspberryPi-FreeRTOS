@@ -60,8 +60,8 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
-void runCommand(uint8_t cmd) {
-    if (cmd == "acc") {
+void runCommand(uint8_t* cmd) {
+    if (strcmp(cmd, "acc")) {
         TaskHandle_t handle = xTaskGetHandle("LED_A");
 
         if (!handle) {
