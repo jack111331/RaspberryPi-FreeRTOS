@@ -8,6 +8,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "interrupts.h"
 #include "gpio.h"
@@ -25,9 +26,7 @@
 #define BRAKE_LED_GPIO 24
 #define CLUTCH_LED_GPIO 25
 
-#define ACCELERATE_TASK_DELAY 1000
-#define BRAKE_TASK_DELAY 2000
-#define CLUTCH_TASK_DELAY 5000
+#define TICK_LENGTH 1000
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -37,9 +36,12 @@ xTaskHandle accHandle;
 xTaskHandle brakeHandle;
 xTaskHandle clutchHandle;
 
-int accState = 1;
-int brakeState = 1;
-int clutchState = 1;
+int accState = 0;
+int brakeState = 0;
+int clutchState = 0;
+
+int velocity = 0;
+int prevVelocity = 0;
 
 void task(int pin, int *state)
 {
@@ -60,6 +62,15 @@ void taskBrake()
 void taskClutch()
 {
     task(CLUTCH_LED_GPIO, &clutchState);
+}
+
+void driveTask() {
+    while (1) {
+        velocity++;
+        if (velocity != prevVelocity) println(itoa(velocity));
+        vTaskDelay(TICK_LENGTH);
+        prevVelocity = velocity;
+    }
 }
 
 // void changeTaskState(int *state, xTaskHandle *handle) {
@@ -261,6 +272,7 @@ int main(void)
     FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
+    xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
 
     //set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
     loaded = 1;
