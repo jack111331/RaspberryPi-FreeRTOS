@@ -62,7 +62,7 @@ void taskClutch()
 
 void runCommand(uint8_t* cmd) {
     if (strcmp(cmd, "acc")) {
-        TaskHandle_t handle = xTaskGetHandle("LED_A");
+        xTaskHandle handle = xTaskGetHandle("LED_A");
 
         if (!handle) {
             xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
