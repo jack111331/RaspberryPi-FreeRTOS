@@ -188,7 +188,7 @@ void serverListenTask(){
                     FreeRTOS_closesocket(connect_sock);
 
             println("Socket closed", GREEN_TEXT);
-        // break;
+            break;
     	}
 }
 
