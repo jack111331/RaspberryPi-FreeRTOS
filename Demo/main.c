@@ -234,9 +234,9 @@ int main(void)
 
     initFB();
 
-    SetGpio(ACCELERATE_LED_GPIO, 1);
-    SetGpio(BRAKE_LED_GPIO, 1);
-    SetGpio(CLUTCH_LED_GPIO, 1);
+    // SetGpio(ACCELERATE_LED_GPIO, 1);
+    // SetGpio(BRAKE_LED_GPIO, 1);
+    // SetGpio(CLUTCH_LED_GPIO, 1);
 
     DisableInterrupts();
     InitInterruptController();
