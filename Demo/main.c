@@ -31,7 +31,7 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-xTaskHandle acc;
+xTaskHandle* acc;
 int accState = 0;
 
 void task(int pin, int delay)
