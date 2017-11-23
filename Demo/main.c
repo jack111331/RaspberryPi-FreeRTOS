@@ -19,6 +19,8 @@
 //   include private header
 #include "FreeRTOS_IP_Private.h"
 
+#define SERVER_PORT 8080
+
 #define ACCELERATE_LED_GPIO 23
 #define BRAKE_LED_GPIO 24
 #define CLUTCH_LED_GPIO 25
@@ -39,60 +41,41 @@ int accState = 1;
 int brakeState = 1;
 int clutchState = 1;
 
-void task(int pin, int delay)
+void task(int pin, int state)
 {
-    int i = 0;
-    while (1)
-    {
-        i = i ? 0 : 1;
-        SetGpio(pin, i);
-        vTaskDelay(delay);
-        FreeRTOS_printf("Blink");
-    }
+    state = state ? 0 : 1;
+    SetGpio(pin, state);
 }
 
 void taskAccelerate()
 {
-    task(ACCELERATE_LED_GPIO, ACCELERATE_TASK_DELAY);
+    task(ACCELERATE_LED_GPIO, *accState);
 }
 
 void taskBrake()
 {
-    task(BRAKE_LED_GPIO, BRAKE_TASK_DELAY);
+    task(BRAKE_LED_GPIO, *brakeState);
 }
 
 void taskClutch()
 {
-    task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
+    task(CLUTCH_LED_GPIO, *clutchState);
 }
 
-void changeTaskState(int *state, xTaskHandle *handle) {
-    if (*state) vTaskSuspend(*handle);
-    else vTaskResume(*handle);
-    *state = *state ? 0 : 1;
-}
+// void changeTaskState(int *state, xTaskHandle *handle) {
+//     if (*state) vTaskSuspend(*handle);
+//     else vTaskResume(*handle);
+//     *state = *state ? 0 : 1;
+// }
 
 int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
     return !strncmp(cmd1, cmd2, strlen((char *)cmd2));
 }
 
 void runCommand(uint8_t *cmd) {
-    uint8_t *cmdAccelerate = "accel";
-    uint8_t *cmdBrake = "brake";
-    uint8_t *cmdClutch = "clutch";
-
-    if (checkCommand(cmd, cmdAccelerate)) {
-        changeTaskState(&accState, &accHandle);
-        SetGpio(ACCELERATE_LED_GPIO, 0);
-    }
-    else if (checkCommand(cmd, cmdBrake)) {
-        changeTaskState(&brakeState, &brakeHandle);
-        SetGpio(BRAKE_LED_GPIO, 0);
-    }
-    else if (checkCommand(cmd, cmdClutch)) {
-        changeTaskState(&clutchState, &clutchHandle);
-        SetGpio(CLUTCH_LED_GPIO, 0);
-    }
+    if (checkCommand(cmd, "accel")) taskAccelerate();
+    else if (checkCommand(cmd, "brake")) taskBrake();
+    else if (checkCommand(cmd, "clutch")) taskClutch();
 }
 
 #undef CREATE_SOCK_TASK
@@ -170,7 +153,7 @@ void serverListenTask()
                         sizeof(xReuseSocket));
 
     struct freertos_sockaddr server, client;
-    server.sin_port = FreeRTOS_htons((uint16_t)2056);
+    server.sin_port = FreeRTOS_htons((uint16_t)SERVER_PORT);
     //server.sin_addr = FreeRTOS_inet_addr("192.168.1.9");
 
     socklen_t cli_size = sizeof(client);
@@ -278,9 +261,6 @@ int main(void)
     FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
-    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, &accHandle);
-    xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, &brakeHandle);
-    xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, &clutchHandle);
 
     //set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
     loaded = 1;
