@@ -41,25 +41,25 @@ int accState = 1;
 int brakeState = 1;
 int clutchState = 1;
 
-void task(int pin, int state)
+void task(int pin, int *state)
 {
-    state = state ? 0 : 1;
-    SetGpio(pin, state);
+    *state = *state ? 0 : 1;
+    SetGpio(pin, *state);
 }
 
 void taskAccelerate()
 {
-    task(ACCELERATE_LED_GPIO, *accState);
+    task(ACCELERATE_LED_GPIO, &accState);
 }
 
 void taskBrake()
 {
-    task(BRAKE_LED_GPIO, *brakeState);
+    task(BRAKE_LED_GPIO, &brakeState);
 }
 
 void taskClutch()
 {
-    task(CLUTCH_LED_GPIO, *clutchState);
+    task(CLUTCH_LED_GPIO, &clutchState);
 }
 
 // void changeTaskState(int *state, xTaskHandle *handle) {
