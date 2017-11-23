@@ -76,9 +76,9 @@ uint8_t* intToString(unsigned n) {
     uint8_t c2 = i2 + '0';
     uint8_t c3 = i3 + '0';
 
-    uint8_t *s1 = &i1;
-    uint8_t *s2 = &i2;
-    uint8_t *s3 = &i3;
+    uint8_t *s1 = &c1;
+    uint8_t *s2 = &c2;
+    uint8_t *s3 = &c3;
 
     strcat(str, i1 ? s1 : ' ');
     strcat(str, (i2 || i1) ? s2 : ' ');
