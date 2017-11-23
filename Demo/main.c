@@ -31,8 +31,13 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-xTaskHandle acc;
+xTaskHandle accHandle;
+xTaskHandle brakeHandle;
+xTaskHandle clutchHandle;
+
 int accState = 1;
+int brakeState = 1;
+int clutchState = 1;
 
 void task(int pin, int delay)
 {
@@ -61,14 +66,32 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, CLUTCH_TASK_DELAY);
 }
 
-void runCommand(uint8_t *cmd) {
-    uint8_t *cmdAcc = "acc";
+void changeTaskState(int& state, xTaskHandle& handle) {
+    if (state) vTaskSuspend(handle);
+    else vTaskResume(state);
+    state = state ? 0 : 1;
+}
 
-    if (!strncmp(cmd, cmdAcc, strlen((char *)cmdAcc))) {
-        if (accState) vTaskSuspend(acc);
-        else vTaskResume(acc);
-        accState = accState ? 0 : 1;
-        SetGpio(ACCELERATE_LED_GPIO, accState);
+int checkCommand(uint8_t cmd1, uint8_t cmd2) {
+    return !strncmp(cmd1, cmd2, strlen((char *)cmd2));
+}
+
+void runCommand(uint8_t *cmd) {
+    uint8_t *cmdAccelerate = "accel";
+    uint8_t *cmdBrake = "brake";
+    uint8_t *cmdClutch = "clutch";
+
+    if (checkCommand(cmd, cmdAccelerate)) {
+        changeTaskState(&accState, &accHandle);
+        SetGpio(ACCELERATE_LED_GPIO, 0);
+    }
+    else if (checkCommand(cmd, cmdBrake)) {
+        changeTaskState(&brakeState, &brakeHandle);
+        SetGpio(BRAKE_LED_GPIO, 0);
+    }
+    else if (checkCommand(cmd, cmdClutch)) {
+        changeTaskState(&clutchState, &clutchHandle);
+        SetGpio(CLUTCH_LED_GPIO, 0);
     }
 }
 
@@ -255,9 +278,9 @@ int main(void)
     FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
-    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, &acc);
-    // xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
-    // xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
+    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, &accHandle);
+    xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, &brakeHandle);
+    xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, &clutchHandle);
 
     //set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
     loaded = 1;
