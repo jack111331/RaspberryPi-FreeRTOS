@@ -68,13 +68,9 @@ uint8_t* intToString(unsigned n) {
 
     uint8_t *str = malloc(4);
 
-    unsigned i1 = n / 100;
-    unsigned i2 = (n % 100) / 10;
-    unsigned i3 = n % 10;
-
-    char s1 = i1 + '0';
-    char s2 = i2 + '0';
-    char s3 = i3 + '0';
+    char *s1 = (n / 100) + '0';
+    char *s2 = ((n % 100) / 10) + '0';
+    char *s3 = (n % 10) + '0';
 
     strcat(str, i1 ? &s1 : ' ');
     strcat(str, (i2 || i1) ? &s2 : ' ');
