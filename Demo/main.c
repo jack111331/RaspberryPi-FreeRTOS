@@ -62,10 +62,13 @@ void taskClutch()
 }
 
 void runCommand(uint8_t* cmd) {
-    if (strcmp(cmd, "acc")) {
+    uint8_t* cmdAcc = "acc";
+
+    if (!strcmp(cmd, cmdAcc)) {
         if (accState) vTaskSuspend(acc);
         else vTaskResume(acc);
-        accState = accState ? 0 : 1; 
+        accState = accState ? 0 : 1;
+        SetGpio(ACCELERATE_LED_GPIO, accState);
     }
 }
 
