@@ -66,12 +66,12 @@ void taskClutch()
 
 void driveTask() {
     while (1) {
-        char *velocityStr = malloc(64);
+        char *velocityStr[64];
 
         velocity++;
 
         if (velocity != prevVelocity) {
-            sprintf(velocityStr, "Velocity: %d km/h", velocity);
+            sprintf(velocityStr, "Velocity: %d km/h", &velocity);
             println(velocityStr, WHITE_TEXT);
         }
         vTaskDelay(TICK_LENGTH);
