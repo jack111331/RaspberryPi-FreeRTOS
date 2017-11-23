@@ -31,7 +31,8 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-static void prvServerConnectionInstance(void *pvParameters);
+xTaskHandle acc;
+int accState = 0;
 
 void task(int pin, int delay)
 {
@@ -62,11 +63,9 @@ void taskClutch()
 
 void runCommand(uint8_t* cmd) {
     if (strcmp(cmd, "acc")) {
-        xTaskHandle handle = xTaskGetHandle("LED_A");
-
-        if (!handle) {
-            xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
-        } else vTaskDelete(handle);
+        if (accState) vTaskSuspend(acc);
+        else vTaskResume(acc);
+        accState = accState ? 0 : 1; 
     }
 }
 
@@ -255,7 +254,8 @@ int main(void)
     //xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
 
-    // xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
+    acc = xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, NULL);
+    vTaskSuspend(acc);
     // xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
     // xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
 
