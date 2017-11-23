@@ -66,7 +66,7 @@ void taskClutch()
 uint8_t* intToString(unsigned n) {
     if (n > 999) return "NULL";
 
-    uint8_t *str;
+    uint8_t *str = malloc(4);
 
     unsigned i1 = n / 100;
     unsigned i2 = (n % 100) / 10;
