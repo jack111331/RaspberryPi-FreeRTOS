@@ -66,7 +66,7 @@ void taskClutch()
 uint8_t* intToString(unsigned n) {
     if (n > 999) return "NULL";
 
-    uint8_t *str = memcpy()
+    uint8_t *str = malloc(64);
     uint8_t *empty = " ";
 
     int i1 = n / 100;
@@ -85,18 +85,22 @@ uint8_t* intToString(unsigned n) {
     strncat(str, (i2 || i1) ? s2 : empty, 1);
     strncat(str, s3, 1);
 
-    println(str);
-
-    return "";
+    return str;
 }
 
 void driveTask() {
     while (1) {
-        velocity++;
-
         if (velocity != prevVelocity) {
-            println(intToString(velocity), WHITE_TEXT);
+            uint8_t *velocityStr = malloc(256);
+            
+            strcat(velocityStr, "Velocity: ");
+            strcat(velocityStr, intToString(velocity));
+            strcat(velocityStr, " km/h");
+
+            println(, WHITE_TEXT);
         }
+
+        velocity++;
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
     }
