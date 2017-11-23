@@ -254,8 +254,8 @@ int main(void)
     //xTaskCreate(serverTask, "server", 128, NULL, 0, NULL);
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
 
-    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, &acc);
-    vTaskSuspend(acc);
+    xTaskCreate(taskAccelerate, "LED_A", 128, NULL, 0, acc);
+    // vTaskSuspend(acc);
     // xTaskCreate(taskBrake, "LED_B", 128, NULL, 0, NULL);
     // xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
 
