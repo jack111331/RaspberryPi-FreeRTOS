@@ -41,6 +41,7 @@ void task(int pin, int delay)
         i = i ? 0 : 1;
         SetGpio(pin, i);
         vTaskDelay(delay);
+        FreeRTOS_printf("Blink");
     }
 }
 
@@ -248,7 +249,7 @@ int main(void)
     xTaskCreate(taskClutch, "LED_C", 128, NULL, 0, NULL);
 
     //set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
-    loaded = 1;
+    loaded = 0;
 
     println("Starting task scheduler", GREEN_TEXT);
 
