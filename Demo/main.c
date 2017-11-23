@@ -66,7 +66,7 @@ void taskClutch()
 uint8_t* intToString(unsigned n) {
     if (n > 999) return "NULL";
 
-    uint8_t *str = malloc(16);
+    uint8_t *str = malloc(4);
 
     unsigned i1 = n / 100;
     unsigned i2 = (n % 100) / 10;
@@ -78,15 +78,13 @@ uint8_t* intToString(unsigned n) {
 
     if (i1) strcat(str, &s1);
     if (i2 || i1) strcat(str, &s2);
-    if (i3 || i2 || i1) strcat(str, &s3);
+    strcat(str, &s3);
 
     return str;
 }
 
 void driveTask() {
     while (1) {
-        char *velocityStr = malloc(32);
-
         velocity++;
 
         if (velocity != prevVelocity) {
