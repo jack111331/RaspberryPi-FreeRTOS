@@ -63,10 +63,9 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, &clutchState);
 }
 
-uint8_t* intToString(unsigned n) {
+uint8_t* intToString(unsigned n, uint8_t *str) {
     if (n > 999) return "NULL";
 
-    uint8_t *str = malloc(64);
     uint8_t *empty = " ";
 
     int i1 = n / 100;
@@ -98,10 +97,11 @@ void driveTask() {
             uint8_t *velocityStr = malloc(256);
 
             strcat(velocityStr, "Velocity: ");
-            strcat(velocityStr, intToString(velocity));
+            strcat(velocityStr, intToString(velocity, velocityStr));
             strcat(velocityStr, " km/h");
 
             println(velocityStr, WHITE_TEXT);
+	    free(velocityStr);
         }
 
         vTaskDelay(TICK_LENGTH);
@@ -238,7 +238,7 @@ void serverListenTask()
             int32_t messageBytes = sizeof(uint8_t) * strlen((char *)messageBuffer);
             int32_t totalBytes = lBytes + messageBytes;
 
-            uint8_t *totalBuffer = (uint8_t *)malloc(totalBytes + 1);
+            uint8_t *totalBuffer = malloc(totalBytes + 1);
             strcpy(totalBuffer, messageBuffer);
             strcat(totalBuffer, pucRxBuffer);
 
@@ -247,7 +247,7 @@ void serverListenTask()
                 lSent = FreeRTOS_send(connect_sock, totalBuffer, totalBytes - lTotalSent, 0);
                 lTotalSent += lSent;
             }
-            // if (lSent < 0) break;
+	    free(totalBuffer);
         }
 
         FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
@@ -289,10 +289,6 @@ int main(void)
     SetGpioFunction(CLUTCH_LED_GPIO, 1);
 
     initFB();
-
-    // SetGpio(ACCELERATE_LED_GPIO, 1);
-    // SetGpio(BRAKE_LED_GPIO, 1);
-    // SetGpio(CLUTCH_LED_GPIO, 1);
 
     DisableInterrupts();
     InitInterruptController();
