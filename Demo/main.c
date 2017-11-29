@@ -117,10 +117,7 @@ int runCommand(uint8_t *cmd) {
         accState = 0;
         brakeState = 1;
     }
-    else if (checkCommand(cmd, "exit")) {
-        println("Exit command", RED_TEXT);
-        return 0;
-    }
+    else if (checkCommand(cmd, "exit")) return 0;
     return 1;
 }
 
@@ -239,8 +236,11 @@ void serverListenTask()
             int32_t totalBytes = lBytes + messageBytes;
 
             uint8_t *totalBuffer = malloc(totalBytes + 1);
+
             strcpy(totalBuffer, messageBuffer);
-            strcat(totalBuffer, pucRxBuffer);
+            
+            if (socketStatus) strcat(totalBuffer, pucRxBuffer);
+            else strcat(totalBuffer, "Socket closed (user exited)");
 
             while ((lSent >= 0) && (lTotalSent < totalBytes))
             {
@@ -251,7 +251,6 @@ void serverListenTask()
         }
 
         if (!socketStatus) {
-            println("Debug", RED_TEXT);
             FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
             // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
