@@ -238,11 +238,13 @@ void serverListenTask()
             uint8_t *totalBuffer = malloc(totalBytes + 1);
 
             strcpy(totalBuffer, messageBuffer);
-            
+
             if (socketStatus) strcat(totalBuffer, pucRxBuffer);
             else {
                 free(totalBuffer);
-                totalBuffer = "From server: Socket closed (user exited)";
+		totalBuffer = malloc(64);
+                strcpy(totalBuffer, "From server: Socket closed (user exited)");
+		totalBytes = sizeof(uint8_t) * strlen((char *)totalBuffer);
             }
 
             while ((lSent >= 0) && (lTotalSent < totalBytes))
