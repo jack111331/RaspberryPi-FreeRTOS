@@ -15,8 +15,7 @@
 #include "FreeRTOS_IP.h"
 #include "FreeRTOS_Sockets.h"
 
-//Only for debug, normally should not
-//   include private header
+// Only for debug, normally should not include private header
 #include "FreeRTOS_IP_Private.h"
 
 #define SERVER_PORT 8080
@@ -88,7 +87,7 @@ uint8_t* intToString(unsigned n, uint8_t *str) {
 }
 
 void driveTask() {
-    vTaskDelay(5000);
+    vTaskDelay(TICK_LENGTH);
 
     while (1) {
         velocity++;
@@ -129,7 +128,7 @@ void runCommand(uint8_t *cmd) {
 // #define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY (pdMS_TO_TICKS(5000))
 
-//server task DOES work in this build, it DOES accept a connection
+// Server task works in this build
 void serverListenTask()
 {
     int status = 0;
@@ -140,10 +139,10 @@ void serverListenTask()
 
     portTickType xTimeOnShutdown;
     uint8_t *pucRxBuffer;
-    // for debug
+    // For debug
     FreeRTOS_Socket_t *sockt;
 
-    //printAddressConfiguration();
+    // printAddressConfiguration();
     volatile int times = 10;
     println("Server task starting", BLUE_TEXT);
     if (FreeRTOS_IsNetworkUp())
@@ -182,16 +181,14 @@ void serverListenTask()
         }
     }
 
-    /* Set a time out so accept() will just wait for a connection. */
+    // Set a time out so accept() will just wait for a connection.
     FreeRTOS_setsockopt(listen_sock,
                         0,
                         FREERTOS_SO_RCVTIMEO,
                         &xReceiveTimeOut,
                         sizeof(xReceiveTimeOut));
 
-    /**
-         ** If I dont set REUSE option, accept will never return
-        **/
+    /// If I dont set REUSE option, accept will never return
     portBASE_TYPE xReuseSocket = pdTRUE;
     FreeRTOS_setsockopt(listen_sock,
                         0,
@@ -222,7 +219,8 @@ void serverListenTask()
     println("Connection accepted", ORANGE_TEXT);
 
     pucRxBuffer = (uint8_t *)pvPortMalloc(ipconfigTCP_MSS);
-    for (;;)
+
+    while (1)
     {
         memset(pucRxBuffer, 0x00, ipconfigTCP_MSS);
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
@@ -247,7 +245,7 @@ void serverListenTask()
                 lSent = FreeRTOS_send(connect_sock, totalBuffer, totalBytes - lTotalSent, 0);
                 lTotalSent += lSent;
             }
-	    free(totalBuffer);
+	        free(totalBuffer);
         }
 
         FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
@@ -293,20 +291,20 @@ int main(void)
     DisableInterrupts();
     InitInterruptController();
 
-    //ensure the IP and gateway match the router settings!
-    //const unsigned char ucIPAddress[ 4 ] = {192, 168, 1, 42};
+    // Ensure the IP and gateway match the router settings
     const unsigned char ucIPAddress[4] = {10, 10, 206, 100};
     const unsigned char ucNetMask[4] = {255, 255, 255, 0};
     const unsigned char ucGatewayAddress[4] = {10, 10, 206, 1};
     const unsigned char ucDNSServerAddress[4] = {10, 10, 206, 1};
-    //const unsigned char ucMACAddress[ 6 ] = {0xB8, 0x27, 0xEB, 0x19, 0xAD, 0xA7};
     const unsigned char ucMACAddress[6] = {0xB8, 0x27, 0xEB, 0xA0, 0xE8, 0x54};
     FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
 
-    //set to 0 for no debug, 1 for debug, or 2 for GCC instrumentation (if enabled in config)
+    // 0 - No debug
+    // 1 - Debug
+    // 2 - GCC instrumentation (if enabled in config)
     loaded = 1;
 
     println("Starting task scheduler", GREEN_TEXT);
