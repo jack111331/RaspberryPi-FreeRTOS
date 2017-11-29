@@ -240,7 +240,10 @@ void serverListenTask()
             strcpy(totalBuffer, messageBuffer);
             
             if (socketStatus) strcat(totalBuffer, pucRxBuffer);
-            else strcat(totalBuffer, "Socket closed (user exited)");
+            else {
+                free(totalBuffer);
+                totalBuffer = "From server: Socket closed (user exited)";
+            }
 
             while ((lSent >= 0) && (lTotalSent < totalBytes))
             {
