@@ -88,24 +88,24 @@ uint8_t* intToString(unsigned n, uint8_t *str) {
 
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
+    uint8_t *velocityStr = malloc(256);
 
     while (1) {
         velocity++;
 
         if (velocity != prevVelocity) {
-            uint8_t *velocityStr = malloc(256);
-
             strcat(velocityStr, "Velocity: ");
             strcat(velocityStr, intToString(velocity, velocityStr));
             strcat(velocityStr, " km/h");
 
             println(velocityStr, WHITE_TEXT);
-	        free(velocityStr);
+            strcpy(velocityStr, "");
         }
 
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
     }
+    free(velocityStr);    
 }
 
 // void changeTaskState(int *state, xTaskHandle *handle) {
@@ -188,7 +188,7 @@ void serverListenTask()
                         &xReceiveTimeOut,
                         sizeof(xReceiveTimeOut));
 
-    /// If I dont set REUSE option, accept will never return
+    // If I dont set REUSE option, accept will never return
     portBASE_TYPE xReuseSocket = pdTRUE;
     FreeRTOS_setsockopt(listen_sock,
                         0,
@@ -198,7 +198,7 @@ void serverListenTask()
 
     struct freertos_sockaddr server, client;
     server.sin_port = FreeRTOS_htons((uint16_t)SERVER_PORT);
-    //server.sin_addr = FreeRTOS_inet_addr("192.168.1.9");
+    // server.sin_addr = FreeRTOS_inet_addr("192.168.1.9");
 
     socklen_t cli_size = sizeof(client);
     println("Server task about to bind", BLUE_TEXT);
