@@ -108,7 +108,7 @@ int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
     return !strncmp(cmd1, cmd2, strlen((char *)cmd2));
 }
 
-void runCommand(uint8_t *cmd) {
+int runCommand(uint8_t *cmd) {
     if (checkCommand(cmd, "accel")) {
         accState = 1;
         brakeState = 0;
@@ -117,6 +117,8 @@ void runCommand(uint8_t *cmd) {
         accState = 0;
         brakeState = 1;
     }
+    else if (checkCommand(cmd, "exit")) return 0;
+    return 1;
 }
 
 #undef CREATE_SOCK_TASK
@@ -220,7 +222,7 @@ void serverListenTask()
         memset(pucRxBuffer, 0x00, ipconfigTCP_MSS);
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
         {
-            runCommand(pucRxBuffer);
+            int status = runCommand(pucRxBuffer);
             printHex("Chars Received: ", (unsigned int)lBytes, ORANGE_TEXT);
             println(pucRxBuffer, RED_TEXT);
 
@@ -243,29 +245,29 @@ void serverListenTask()
 	        free(totalBuffer);
         }
 
-        /*
-        FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
+        if (!status) {
+            FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
-        // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
-        // returning an error.
-        xTimeOnShutdown = xTaskGetTickCount();
+            // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
+            // returning an error.
+            xTimeOnShutdown = xTaskGetTickCount();
 
-        println("Waiting for shutdown", GREEN_TEXT);
+            println("Waiting for shutdown", GREEN_TEXT);
 
-        do
-        {
-            if (FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0) < 0)
-                break;
-        } while ((xTaskGetTickCount() - xTimeOnShutdown) < tcpechoSHUTDOWN_DELAY);
+            do
+            {
+                if (FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0) < 0)
+                    break;
+            } while ((xTaskGetTickCount() - xTimeOnShutdown) < tcpechoSHUTDOWN_DELAY);
 
-        println("Shutdown successful", GREEN_TEXT);
+            println("Shutdown successful", GREEN_TEXT);
 
-        vPortFree(pucRxBuffer);
-        FreeRTOS_closesocket(connect_sock);
+            vPortFree(pucRxBuffer);
+            FreeRTOS_closesocket(connect_sock);
 
-        println("Socket closed", GREEN_TEXT);
-        break;
-        */
+            println("Socket closed", GREEN_TEXT);
+            break;
+        }
     }
 }
 
