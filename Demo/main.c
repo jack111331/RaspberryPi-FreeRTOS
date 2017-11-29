@@ -24,9 +24,11 @@
 #define BRAKE_LED_GPIO 24
 #define CLUTCH_LED_GPIO 25
 
-#define TICK_LENGTH 1000
+#define TICK_LENGTH 500
 #define DELAY_SHORT 100
+
 #define MAX_VELOCITY 280
+#define CLUTCH_THRESHOLD 5
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -76,23 +78,28 @@ void updateVelocity() {
     if (accState && velocity < MAX_VELOCITY) velocity++;
     else if (brakeState && velocity > 0) velocity--;
 
-    clutchState = velocity < 10 ? 1 : 0;
+    clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
+}
+
+void printVelocity(uint8_t *velocityStr) {
+    strcat(velocityStr, "Velocity: ");
+    intToString(velocity, velocityStr);
+    strcat(velocityStr, " km/h");
+
+    println(velocityStr, WHITE_TEXT);
+    strcpy(velocityStr, "");
 }
 
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *velocityStr = malloc(256);
+    printVelocity(velocityStr);
 
     while (1) {
         updateVelocity();
 
         if (velocity != prevVelocity) {
-            strcat(velocityStr, "Velocity: ");
-            intToString(velocity, velocityStr);
-            strcat(velocityStr, " km/h");
-
-            println(velocityStr, WHITE_TEXT);
-            strcpy(velocityStr, "");
+            printVelocity(velocityStr);
         }
 
         vTaskDelay(TICK_LENGTH);
