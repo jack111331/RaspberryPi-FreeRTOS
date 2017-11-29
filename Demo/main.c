@@ -25,6 +25,8 @@
 #define CLUTCH_LED_GPIO 25
 
 #define TICK_LENGTH 1000
+#define DELAY_SHORT 100
+#define MAX_VELOCITY 280
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -41,25 +43,13 @@ int clutchState = 0;
 unsigned velocity = 0;
 unsigned prevVelocity = 0;
 
-void task(int pin, int *state)
-{
-    *state = *state ? 0 : 1;
-    SetGpio(pin, *state);
-}
-
-void taskAccelerate()
-{
-    task(ACCELERATE_LED_GPIO, &accState);
-}
-
-void taskBrake()
-{
-    task(BRAKE_LED_GPIO, &brakeState);
-}
-
-void taskClutch()
-{
-    task(CLUTCH_LED_GPIO, &clutchState);
+void updateGpio() {
+    while (1) {
+        SetGpio(ACCELERATE_LED_GPIO, accState);
+        SetGpio(BRAKE_LED_GPIO, brakeState);
+        SetGpio(CLUTCH_LED_GPIO, clutchState);
+        vTaskDelay(DELAY_SHORT);
+    }
 }
 
 void intToString(unsigned n, uint8_t *str) {
@@ -82,12 +72,22 @@ void intToString(unsigned n, uint8_t *str) {
     strncat(str, s3, 1);
 }
 
+void updateVelocity() {
+    if (accState) velocity++;
+    else if (brakeState) velocity--;
+
+    clutchState = velocity < 10 ? 1 : 0;
+
+    if (velocity < 0) velocity = 0;
+    else if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
+}
+
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *velocityStr = malloc(256);
 
     while (1) {
-        velocity++;
+        updateVelocity();
 
         if (velocity != prevVelocity) {
             strcat(velocityStr, "Velocity: ");
@@ -98,7 +98,7 @@ void driveTask() {
             strcpy(velocityStr, "");
         }
 
-        vTaskDelay(TICK_LENGTH / 32);
+        vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
     }
     free(velocityStr);
@@ -115,9 +115,14 @@ int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
 }
 
 void runCommand(uint8_t *cmd) {
-    if (checkCommand(cmd, "accel")) taskAccelerate();
-    else if (checkCommand(cmd, "brake")) taskBrake();
-    else if (checkCommand(cmd, "clutch")) taskClutch();
+    if (checkCommand(cmd, "accel")) {
+        accState = 1;
+        brakeState = 0;
+    }
+    else if (checkCommand(cmd, "brake")) {
+        accState = 0;
+        brakeState = 1;
+    }
 }
 
 #undef CREATE_SOCK_TASK
@@ -297,6 +302,7 @@ int main(void)
 
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
+    xTaskCreate(updateGpio, "update", 128, NULL, 0, NULL);
 
     // 0 - No debug
     // 1 - Debug
