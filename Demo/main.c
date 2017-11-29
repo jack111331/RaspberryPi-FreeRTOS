@@ -34,13 +34,9 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
 
-xTaskHandle accHandle;
-xTaskHandle brakeHandle;
-xTaskHandle clutchHandle;
-
 int accState = 0;
-int brakeState = 0;
-int clutchState = 0;
+int brakeState = 1;
+int clutchState = 1;
 
 unsigned velocity = 0;
 unsigned prevVelocity = 0;
@@ -107,12 +103,6 @@ void driveTask() {
     }
     free(velocityStr);
 }
-
-// void changeTaskState(int *state, xTaskHandle *handle) {
-//     if (*state) vTaskSuspend(*handle);
-//     else vTaskResume(*handle);
-//     *state = *state ? 0 : 1;
-// }
 
 int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
     return !strncmp(cmd1, cmd2, strlen((char *)cmd2));
