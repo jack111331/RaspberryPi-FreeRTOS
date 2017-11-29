@@ -62,9 +62,7 @@ void taskClutch()
     task(CLUTCH_LED_GPIO, &clutchState);
 }
 
-uint8_t* intToString(unsigned n, uint8_t *str) {
-    if (n > 999) return "NULL";
-
+void intToString(unsigned n, uint8_t *str) {
     uint8_t *empty = " ";
 
     int i1 = n / 100;
@@ -82,8 +80,6 @@ uint8_t* intToString(unsigned n, uint8_t *str) {
     strncat(str, i1 ? s1 : empty, 1);
     strncat(str, (i2 || i1) ? s2 : empty, 1);
     strncat(str, s3, 1);
-
-    return str;
 }
 
 void driveTask() {
@@ -95,17 +91,17 @@ void driveTask() {
 
         if (velocity != prevVelocity) {
             strcat(velocityStr, "Velocity: ");
-            strcat(velocityStr, intToString(velocity, velocityStr));
+            intToString(velocity, velocityStr);
             strcat(velocityStr, " km/h");
 
             println(velocityStr, WHITE_TEXT);
             strcpy(velocityStr, "");
         }
 
-        vTaskDelay(TICK_LENGTH);
+        vTaskDelay(TICK_LENGTH / 32);
         prevVelocity = velocity;
     }
-    free(velocityStr);    
+    free(velocityStr);
 }
 
 // void changeTaskState(int *state, xTaskHandle *handle) {
