@@ -100,7 +100,7 @@ void driveTask() {
             strcat(velocityStr, " km/h");
 
             println(velocityStr, WHITE_TEXT);
-	    free(velocityStr);
+	        free(velocityStr);
         }
 
         vTaskDelay(TICK_LENGTH);
@@ -248,7 +248,6 @@ void serverListenTask()
 	        free(totalBuffer);
         }
 
-        /*
         FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
         // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
@@ -270,7 +269,6 @@ void serverListenTask()
 
         println("Socket closed", GREEN_TEXT);
         break;
-        */
     }
 }
 
