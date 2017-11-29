@@ -73,13 +73,10 @@ void intToString(unsigned n, uint8_t *str) {
 }
 
 void updateVelocity() {
-    if (accState) velocity++;
-    else if (brakeState) velocity--;
+    if (accState && velocity < MAX_VELOCITY) velocity++;
+    else if (brakeState && velocity > 0) velocity--;
 
     clutchState = velocity < 10 ? 1 : 0;
-
-    if (velocity < 0) velocity = 0;
-    else if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
 }
 
 void driveTask() {
