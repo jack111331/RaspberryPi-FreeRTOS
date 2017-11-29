@@ -219,10 +219,12 @@ void serverListenTask()
 
     while (1)
     {
+        int socketStatus = 1;
+
         memset(pucRxBuffer, 0x00, ipconfigTCP_MSS);
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
         {
-            int status = runCommand(pucRxBuffer);
+            socketStatus = runCommand(pucRxBuffer);
             printHex("Chars Received: ", (unsigned int)lBytes, ORANGE_TEXT);
             println(pucRxBuffer, RED_TEXT);
 
@@ -245,7 +247,7 @@ void serverListenTask()
 	        free(totalBuffer);
         }
 
-        if (!status) {
+        if (!socketStatus) {
             FreeRTOS_shutdown(connect_sock, FREERTOS_SHUT_RDWR);
 
             // Wait for the shutdown to take effect, indicated by FreeRTOS_recv()
