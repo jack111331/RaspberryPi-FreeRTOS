@@ -82,8 +82,10 @@ void updateLights() {
         }
         else if (blinkerState == 1) {
             drawSquare(1, row, 2, FONT_SCALE, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(13, row, 2, FONT_SCALE, DARK_TEXT);
         }
         else if (blinkerState == 2) {
+            drawSquare(1, row, 2, FONT_SCALE, DARK_TEXT);
             drawSquare(13, row, 2, FONT_SCALE, blinkerCycle ? BLINKER_ON : DARK_TEXT);
         }
 
@@ -208,6 +210,9 @@ void driveTask() {
             printGear(str);
         }
 
+        prevVelocity = velocity;
+        prevRPM = rpm;
+        prevGear = gear;
         vTaskDelay(DELAY_SHORT);
     }
     free(str);
