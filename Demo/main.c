@@ -205,17 +205,17 @@ void driveTask() {
 
     while (1) {
         if (velocity != prevVelocity) {
-            clearScreen(11, 1, 3, FONT_SCALE);
+            clearScreen(11, 1, 4, FONT_SCALE);
             printVelocity(str);
         }
 
         if (rpm != prevRPM) {
-            clearScreen(11, 2, 3, FONT_SCALE);
+            clearScreen(11, 2, 4, FONT_SCALE);
             printRPM(str);            
         }
         
         if (gear != prevGear) {
-            clearScreen(11, 3, 3, FONT_SCALE);
+            clearScreen(11, 3, 4, FONT_SCALE);
             printGear(str);
         }
 
