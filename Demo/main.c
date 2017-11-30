@@ -209,6 +209,11 @@ int runCommand(uint8_t *cmd) {
     }
     else if (checkCommand(cmd, "forward")) {
         blinkerState = 0;
+        reverseState = 0;
+    }
+    else if (checkCommand(cmd, "reverse") && !velocity) {
+        reverseState = 1;
+        brakeState = 0;
     }
     else if (checkCommand(cmd, "exit")) return 0;
     return 1;
