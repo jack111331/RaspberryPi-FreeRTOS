@@ -100,19 +100,23 @@ void updateLights() {
 void intToString(unsigned n, uint8_t *str) {
     uint8_t *empty = " ";
 
+    int i0 = n / 1000;
     int i1 = n / 100;
-    int i2 = (n % 100) / 10;
+    int i2 = n / 10;
     int i3 = n % 10;
 
+    uint8_t c0 = i0 + '0';
     uint8_t c1 = i1 + '0';
     uint8_t c2 = i2 + '0';
     uint8_t c3 = i3 + '0';
 
+    uint8_t *s0 = &c0;
     uint8_t *s1 = &c1;
     uint8_t *s2 = &c2;
     uint8_t *s3 = &c3;
 
-    strncat(str, i1 ? s1 : empty, 1);
+    strncat(str, i0 ? s0 : empty, 1);
+    strncat(str, (i0 || i1) ? s1 : empty, 1);
     strncat(str, (i2 || i1) ? s2 : empty, 1);
     strncat(str, s3, 1);
 }
@@ -165,14 +169,13 @@ void *gearToString(uint8_t *str) {
 
 void printRPM(uint8_t *str) {
     strcat(str, "RPM: ");
-    intToString(rpm, str);  
-    strcat(str, " x100");
+    intToString(rpm, str);
     drawStringScaled(str, 6, 2, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
 }
 
 void printGear(uint8_t *str) {
-    strcat(str, "Gear:   ");
+    strcat(str, "Gear:    ");
     gearToString(str);
     drawStringScaled(str, 5, 3, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
