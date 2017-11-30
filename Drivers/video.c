@@ -170,8 +170,10 @@ void println(const char* message, int colour){
 			int stop = *timeStamp + 5000 * 1000;
 			while (*timeStamp < stop) __asm__("nop");
 
-			for(int x = 0; x < SCREEN_WIDTH * SCREEN_HEIGHT; x++){
-				framebuffer[x] = 0xFF000000;
+			for (int y = 0; y < SCREEN_HEIGHT; y++) {
+				for (int x = 0; x < SCREEN_WIDTH / 2; x++) {
+					framebuffer[y * SCREEN_WIDTH + x] = 0xFF000000;
+				}
 			}
 			position_y = 0;
 			position_x = 0;
