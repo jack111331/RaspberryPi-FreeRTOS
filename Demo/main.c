@@ -69,11 +69,11 @@ void updateLights() {
         }
 
         if (brakeState != brakePrev) {
-            drawSquare(7, row, 2, FONT_SCALE, brakeState ? BRAKE_ON : DARK_TEXT);            
+            drawSquare(7, row, 2, FONT_SCALE, brakeState ? BRAKE_ON : DARK_TEXT);
         }
 
         if (clutchState != clutchPrev) {
-            drawSquare(4, row, 2, FONT_SCALE, clutchState ? CLUTCH_ON : DARK_TEXT);            
+            drawSquare(4, row, 2, FONT_SCALE, clutchState ? CLUTCH_ON : DARK_TEXT);
         }
 
         if (!blinkerState) {
@@ -183,14 +183,15 @@ void printGear(uint8_t *str) {
 
 void printInfo() {
     drawStringScaled("reverse / forward", 1, 11, WHITE_TEXT, FONT_SCALE);
-    drawStringScaled("accel / brake", 1, 12, WHITE_TEXT, FONT_SCALE);
-    drawStringScaled("left / right", 1, 13, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("accel  / brake", 1, 12, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("left  / right", 1, 13, WHITE_TEXT, FONT_SCALE);
     drawStringScaled("blinker", 1, 14, WHITE_TEXT, FONT_SCALE);
 }
 
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *str = malloc(256);
+    strcpy(str, "");
     drawVertDivider(0, 2);
     printInfo();
 
@@ -211,9 +212,9 @@ void driveTask() {
 
         if (rpm != prevRPM) {
             clearScreen(11, 2, 4, FONT_SCALE);
-            printRPM(str);            
+            printRPM(str);
         }
-        
+
         if (gear != prevGear) {
             clearScreen(11, 3, 4, FONT_SCALE);
             printGear(str);
@@ -363,7 +364,6 @@ void serverListenTask()
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
         {
             socketStatus = runCommand(pucRxBuffer);
-            printHex("Chars Received: ", (unsigned int)lBytes, ORANGE_TEXT);
             println(pucRxBuffer, RED_TEXT);
 
             lSent = 0;
@@ -439,10 +439,14 @@ int main(void)
     InitInterruptController();
 
     // Ensure the IP and gateway match the router settings
-    const unsigned char ucIPAddress[4] = {10, 10, 206, 100};
+    // const unsigned char ucIPAddress[4] = {192, 168, 0, 113};
+    const unsigned char ucIPAddress[4] = {10, 10, 206, 100];
     const unsigned char ucNetMask[4] = {255, 255, 255, 0};
+    // const unsigned char ucGatewayAddress[4] = {192, 168, 0, 1};
+    // const unsigned char ucDNSServerAddress[4] = {192, 168, 0, 1};
     const unsigned char ucGatewayAddress[4] = {10, 10, 206, 1};
     const unsigned char ucDNSServerAddress[4] = {10, 10, 206, 1};
+    // const unsigned char ucMACAddress[6] = {0xB8, 0x27, 0xEB, 0x58, 0x7F, 0x6F};
     const unsigned char ucMACAddress[6] = {0xB8, 0x27, 0xEB, 0xA0, 0xE8, 0x54};
     FreeRTOS_IPInit(ucIPAddress, ucNetMask, ucGatewayAddress, ucDNSServerAddress, ucMACAddress);
 

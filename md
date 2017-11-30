@@ -1,0 +1,4 @@
+make
+mkdir -p SD_Example
+rm -f SD_Example/kernel7.img
+cp kernel7.img SD_Example/
