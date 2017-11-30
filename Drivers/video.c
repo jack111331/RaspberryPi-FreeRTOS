@@ -51,8 +51,8 @@ void initFB(){
 		attempts++;
 	}*/
 
-	SCREEN_WIDTH = 1920;  // mailbuffer[5];
-	SCREEN_HEIGHT = 1080; // mailbuffer[6];
+	SCREEN_WIDTH = 1920;
+	SCREEN_HEIGHT = 1080;
 
 	mailbuffer[0] = 22 * 4;		//mail buffer size
 	mailbuffer[1] = 0;		//response code
@@ -145,10 +145,9 @@ void drawChar(unsigned char c, int x, int y, int colour){
 }
 
 __attribute__((no_instrument_function))
-void drawCharScaled(unsigned char c, int x, int y, int colour, int scale){
+void drawCharScaled(unsigned char c, int x, int y, int colour, int scale) {
 	int i, j;
 
-	//convert the character to an index
 	c = c & 0x7F;
 	if (c < ' ') {
 		c = 0;
@@ -156,12 +155,14 @@ void drawCharScaled(unsigned char c, int x, int y, int colour, int scale){
 		c -= ' ';
 	}
 
-	//draw pixels of the character
-	for (j = 0; j < (CHAR_WIDTH * scale); j++) {
-		for (i = 0; i < (CHAR_HEIGHT * scale); i++) {
-			//unsigned char temp = font[c][j];
+	for (j = 0; j < CHAR_WIDTH; j++) {
+		for (i = 0; i < CHAR_HEIGHT; i++) {
 			if (font[c][j] & (1<<i)) {
-				framebuffer[((y + (i % scale)) + i) * SCREEN_WIDTH + ((x + (j % scale)) + j)] = colour;
+				for (int y2 = 0; y2 < scale; y2++) {
+					for (int x2 = 0; x2 < scale; x2++) {
+						framebuffer[(y + y2 + i) * SCREEN_WIDTH + (x + x2 + j)] = colour;
+					}
+				}
 			}
 		}
 	}
