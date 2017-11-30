@@ -155,8 +155,8 @@ void updateRPM() {
 }
 
 void *gearToString(uint8_t *str) {
-    if (gear < 0) return "R";
-    if (!gear) return "P";
+    if (gear < 0) strncat(str, "R", 1);
+    if (!gear) strncat(str, "P", 1);
     else {
         uint8_t g = (gear + '0');
         strncat(str, &g, 1);
