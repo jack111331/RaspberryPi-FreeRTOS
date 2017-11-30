@@ -177,11 +177,25 @@ void drawString(const char* str, int x, int y, int colour){
 }
 
 __attribute__((no_instrument_function))
-void drawStringScaled(const char* str, int x, int y, int colour, int scale){
+void drawStringScaled(const char* str, int x, int y, int colour, int scale) {
+	int xOffset = (SCREEN_WIDTH / SCREEN_SPLITS);
+	x *= (CHAR_WIDTH * scale);
+	y *= (CHAR_HEIGHT * scale);
+
 	while (*str) {
-		drawCharScaled(*str++, x, y, colour, scale);
+		drawCharScaled(*str++, x + xOffset, y, colour, scale);
 		x += CHAR_WIDTH * scale;
 	}
+}
+
+__attribute__((no_instrument_function))
+void clearScreen(int x, int y, int n, int scale) {
+	int xOffset = (SCREEN_WIDTH / SCREEN_SPLITS);	
+	x *= (CHAR_WIDTH * scale);
+	y *= (CHAR_HEIGHT * scale);
+	int x2 = x * n + xOffset;
+
+	drawRect(x, y, x2, y + (CHAR_HEIGHT * scale), 0xFFFFFFFF);
 }
 
 int position_x = 0;

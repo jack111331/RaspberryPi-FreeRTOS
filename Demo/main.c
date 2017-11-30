@@ -81,8 +81,8 @@ void printVelocity(uint8_t *velocityStr) {
     strcat(velocityStr, "Velocity: ");
     intToString(velocity, velocityStr);
     strcat(velocityStr, " km/h");
-    drawRect(1474, 16, 1552, 48, RED_TEXT);
-    drawStringScaled(velocityStr, 1216, 16, WHITE_TEXT, 4);
+    clearScreen(11, 1, 3, 4);
+    drawStringScaled(velocityStr, 1, 1, WHITE_TEXT, 4);
     strcpy(velocityStr, "");
 }
 
