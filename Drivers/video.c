@@ -160,7 +160,7 @@ void drawCharScaled(unsigned char c, int x, int y, int colour, int scale) {
 			if (font[c][j] & (1<<i)) {
 				for (int y2 = 0; y2 < scale; y2++) {
 					for (int x2 = 0; x2 < scale; x2++) {
-						framebuffer[(y + y2 + i) * SCREEN_WIDTH + (x + x2 + j)] = colour;
+						framebuffer[(y + y2 + (i * scale)) * SCREEN_WIDTH + (x + x2 + (j * scale))] = colour;
 					}
 				}
 			}
