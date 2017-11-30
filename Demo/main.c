@@ -180,10 +180,18 @@ void printGear(uint8_t *str) {
     strcpy(str, "");
 }
 
+void printInfo() {
+    drawStringScaled("reverse / forward", 1, 11, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("accel / brake", 1, 12, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("left / right", 1, 13, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("blinker", 1, 14, WHITE_TEXT, FONT_SCALE);
+}
+
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *str = malloc(256);
     drawVertDivider(0, 2);
+    printInfo();
 
     xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
     xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
