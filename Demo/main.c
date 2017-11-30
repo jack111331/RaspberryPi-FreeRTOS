@@ -26,6 +26,7 @@
 
 #define TICK_LENGTH 500
 #define DELAY_SHORT 100
+#define DELAY_MIN 16
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
@@ -173,12 +174,13 @@ void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *str = malloc(256);
     drawVertDivider(0, 2);
-    printDetails(str);
+
+    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
+    xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
 
     while (1) {
-        updateVelocity();
         printDetails(str);
-        vTaskDelay(TICK_LENGTH);
+        vTaskDelay(DELAY_MIN);
     }
     free(str);
 }
@@ -202,9 +204,11 @@ int runCommand(uint8_t *cmd) {
     else if (checkCommand(cmd, "right")) {
         blinkerState = 2;
     }
-    else if (checkCommand(cmd, "forward")) {
-        blinkerState = 0;
+    else if (checkCommand(cmd, "forward") && !velocity) {
         reverseState = 0;
+    }
+    else if (checkCommand(cmd, "blinker")) {
+        blinkerState = 0;
     }
     else if (checkCommand(cmd, "reverse") && !velocity) {
         reverseState = 1;
@@ -403,7 +407,6 @@ int main(void)
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
     xTaskCreate(updateGpio, "gpio", 128, NULL, 0, NULL);
-    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
 
     // 0 - No debug
     // 1 - Debug
