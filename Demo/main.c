@@ -38,6 +38,7 @@ int accState = 0;
 int brakeState = 1;
 int clutchState = 1;
 int blinkerState = 0;
+int reverseState = 0;
 
 unsigned velocity = 0;
 unsigned prevVelocity = 0;
@@ -57,28 +58,30 @@ void updateLights() {
     int clutchPrev = -1;
     int blinkerCycle = 0;
 
+    int row = 5;
+
     while (1) {
         if (accState != accPrev) {
-            drawSquare(10, 3, 2, 4, accState ? ACCEL_ON : DARK_TEXT);
+            drawSquare(10, row, 2, 4, accState ? ACCEL_ON : DARK_TEXT);
         }
 
         if (brakeState != brakePrev) {
-            drawSquare(7, 3, 2, 4, brakeState ? BRAKE_ON : DARK_TEXT);            
+            drawSquare(7, row, 2, 4, brakeState ? BRAKE_ON : DARK_TEXT);            
         }
 
         if (clutchState != clutchPrev) {
-            drawSquare(4, 3, 2, 4, clutchState ? CLUTCH_ON : DARK_TEXT);            
+            drawSquare(4, row, 2, 4, clutchState ? CLUTCH_ON : DARK_TEXT);            
         }
 
         if (!blinkerState) {
-            drawSquare(1, 3, 2, 4, DARK_TEXT);
-            drawSquare(13, 3, 2, 4, DARK_TEXT);
+            drawSquare(1, row, 2, 4, DARK_TEXT);
+            drawSquare(13, row, 2, 4, DARK_TEXT);
         }
         else if (blinkerState == 1) {
-            drawSquare(1, 3, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(1, row, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
         }
         else if (blinkerState == 2) {
-            drawSquare(13, 3, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(13, row, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
         }
 
         accPrev = accState;
@@ -116,20 +119,53 @@ void updateVelocity() {
     clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
 }
 
-void printVelocity(uint8_t *velocityStr) {
-    strcat(velocityStr, "Velocity: ");
-    intToString(velocity, velocityStr);
-    strcat(velocityStr, " km/h");
+void printVelocity(uint8_t *str) {
+    strcat(str, "Velocity: ");
+    intToString(velocity, str);
+    strcat(str, " km/h");
     clearScreen(11, 1, 3, 4);
-    drawStringScaled(velocityStr, 1, 1, WHITE_TEXT, 4);
-    strcpy(velocityStr, "");
+    drawStringScaled(str, 1, 1, WHITE_TEXT, 4);
+    strcpy(str, "");
+}
+
+unsigned calculateRPM() {
+    return 0;
+}
+
+uint8_t *getGear() {
+    if (reverseState) return "R";
+    else if (!velocity) return "P";
+    else if (velocity < 15) return "1";
+    else if (velocity < 30) return "2";
+    else if (velocity < 45) return "3";
+    else if (velocity < 80) return "4";
+    else if (velocity < 120) return "5";
+    else return "6";
+}
+
+void printRPM(uint8_t *str) {
+    strcat(str, "RPM:   ");
+    intToString(calculateRPM(), str);
+    strcat(str, " x100");
+    clearScreen(12, 2, 2, 4);
+    drawStringScaled(str, 6, 2, WHITE_TEXT, 4);
+    strcpy(str, "");
+}
+
+void printGear(uint8_t *str) {
+    strcat(str, "Gear:   ");
+    strcat(str, getGear());
+    clearScreen(11, 3, 1, 4);
+    drawStringScaled(str, 5, 3, WHITE_TEXT, 4);
+    strcpy(str, "");
 }
 
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
-    uint8_t *velocityStr = malloc(256);
+    uint8_t *str = malloc(256);
     drawVertDivider(0, 2);
-    printVelocity(velocityStr);
+    printVelocity(str);
+    printRPM(str);
 
     while (1) {
         updateVelocity();
