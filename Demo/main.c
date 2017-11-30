@@ -30,6 +30,8 @@
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
 
+#define FONT_SCALE 4
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef long int32_t;
@@ -62,26 +64,26 @@ void updateLights() {
 
     while (1) {
         if (accState != accPrev) {
-            drawSquare(10, row, 2, 4, accState ? ACCEL_ON : DARK_TEXT);
+            drawSquare(10, row, 2, FONT_SCALE, accState ? ACCEL_ON : DARK_TEXT);
         }
 
         if (brakeState != brakePrev) {
-            drawSquare(7, row, 2, 4, brakeState ? BRAKE_ON : DARK_TEXT);            
+            drawSquare(7, row, 2, FONT_SCALE, brakeState ? BRAKE_ON : DARK_TEXT);            
         }
 
         if (clutchState != clutchPrev) {
-            drawSquare(4, row, 2, 4, clutchState ? CLUTCH_ON : DARK_TEXT);            
+            drawSquare(4, row, 2, FONT_SCALE, clutchState ? CLUTCH_ON : DARK_TEXT);            
         }
 
         if (!blinkerState) {
-            drawSquare(1, row, 2, 4, DARK_TEXT);
-            drawSquare(13, row, 2, 4, DARK_TEXT);
+            drawSquare(1, row, 2, FONT_SCALE, DARK_TEXT);
+            drawSquare(13, row, 2, FONT_SCALE, DARK_TEXT);
         }
         else if (blinkerState == 1) {
-            drawSquare(1, row, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(1, row, 2, FONT_SCALE, blinkerCycle ? BLINKER_ON : DARK_TEXT);
         }
         else if (blinkerState == 2) {
-            drawSquare(13, row, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(13, row, 2, FONT_SCALE, blinkerCycle ? BLINKER_ON : DARK_TEXT);
         }
 
         accPrev = accState;
@@ -123,8 +125,7 @@ void printVelocity(uint8_t *str) {
     strcat(str, "Velocity: ");
     intToString(velocity, str);
     strcat(str, " km/h");
-    clearScreen(11, 1, 3, 4);
-    drawStringScaled(str, 1, 1, WHITE_TEXT, 4);
+    drawStringScaled(str, 1, 1, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
 }
 
@@ -144,23 +145,25 @@ uint8_t *getGear() {
 }
 
 void printRPM(uint8_t *str) {
-    strcat(str, "RPM:   ");
+    strcat(str, "RPM: ");
     intToString(calculateRPM(), str);
     strcat(str, " x100");
-    clearScreen(12, 2, 2, 4);
-    drawStringScaled(str, 6, 2, WHITE_TEXT, 4);
+    drawStringScaled(str, 6, 2, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
 }
 
 void printGear(uint8_t *str) {
     strcat(str, "Gear:   ");
     strcat(str, getGear());
-    clearScreen(11, 3, 1, 4);
-    drawStringScaled(str, 5, 3, WHITE_TEXT, 4);
+    drawStringScaled(str, 5, 3, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
 }
 
 void printDetails(uint8_t *str) {
+    for (int i = 1; i <= 3; i++) {
+        clearScreen(11, i, 3, FONT_SCALE);        
+    }
+
     printVelocity(str);
     printRPM(str);
     printGear(str);
