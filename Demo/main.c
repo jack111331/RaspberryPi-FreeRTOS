@@ -154,12 +154,12 @@ void updateRPM() {
     }
 }
 
-uint8_t *gearToString() {
+void *gearToString(uint8_t *str) {
     if (gear < 0) return "R";
     if (!gear) return "P";
     else {
         uint8_t g = (gear + '0');
-        return &g;
+        strncat(str, &g, 1);
     }
 }
 
@@ -173,7 +173,7 @@ void printRPM(uint8_t *str) {
 
 void printGear(uint8_t *str) {
     strcat(str, "Gear:   ");
-    strcat(str, gearToString());
+    gearToString(str);
     drawStringScaled(str, 5, 3, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
 }
