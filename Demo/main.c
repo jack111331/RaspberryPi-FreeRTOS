@@ -76,10 +76,10 @@ void updateLights() {
                 drawSquare(1, 3, 2, 4, BLINKER_OFF);
                 drawSquare(13, 3, 2, 4, BLINKER_OFF);
             }
-            else (blinkerState == 1) {
+            else if (blinkerState == 1) {
                 drawSquare(1, 3, 2, 4, blinkerCycle ? BLINKER_ON : BLINKER_OFF);
             }
-            else (blinkerState == 2) {
+            else if (blinkerState == 2) {
                 drawSquare(13, 3, 2, 4, blinkerCycle ? BLINKER_ON : BLINKER_OFF);
             }
         }
