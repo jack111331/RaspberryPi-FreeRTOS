@@ -160,24 +160,29 @@ void printGear(uint8_t *str) {
     strcpy(str, "");
 }
 
+void printDetails(uint8_t *str) {
+    printVelocity(str);
+    printRPM(str);
+    printGear(str);
+}
+
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *str = malloc(256);
     drawVertDivider(0, 2);
-    printVelocity(str);
-    printRPM(str);
+    printDetails(str);
 
     while (1) {
         updateVelocity();
 
         if (velocity != prevVelocity) {
-            printVelocity(velocityStr);
+            printDetails(str);
         }
 
         vTaskDelay(TICK_LENGTH);
         prevVelocity = velocity;
     }
-    free(velocityStr);
+    free(str);
 }
 
 int checkCommand(uint8_t *cmd1, uint8_t *cmd2) {
