@@ -26,7 +26,7 @@
 
 #define TICK_LENGTH 500
 #define DELAY_SHORT 100
-#define DELAY_MIN 200
+#define DELAY_MIN 32
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
@@ -121,6 +121,7 @@ void updateVelocity() {
         else if (brakeState && velocity > 0) velocity--;
 
         clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
+        vTaskDelay(TICK_LENGTH);
     }
 }
 
