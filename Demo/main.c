@@ -157,7 +157,10 @@ void updateRPM() {
 uint8_t *gearToString() {
     if (gear < 0) return "R";
     if (!gear) return "P";
-    else return &(gear + '0');
+    else {
+        uint8_t g = (gear + '0');
+        return &g;
+    }
 }
 
 void printRPM(uint8_t *str) {
