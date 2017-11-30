@@ -26,7 +26,6 @@
 
 #define TICK_LENGTH 500
 #define DELAY_SHORT 100
-#define DELAY_MIN 1
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
@@ -44,7 +43,8 @@ int blinkerState = 0;
 int reverseState = 0;
 
 unsigned velocity = 0;
-unsigned prevVelocity = 0;
+unsigned rpm = 8;
+int gear = 0;
 
 void updateGpio() {
     while (1) {
@@ -133,24 +133,36 @@ void printVelocity(uint8_t *str) {
     strcpy(str, "");
 }
 
-unsigned calculateRPM() {
-    return 0;
+void updateGear() {
+    while (1) {
+        if (reverseState) gear = -1;
+        else if (!velocity) gear = 0;
+        else if (velocity < 15) gear = 1;
+        else if (velocity < 30) gear = 2;
+        else if (velocity < 45) gear = 3;
+        else if (velocity < 80) gear = 4;
+        else if (velocity < 120) gear = 5;
+        else gear = 6;
+        vTaskDelay(TICK_LENGTH);
+    }
 }
 
-uint8_t *getGear() {
-    if (reverseState) return "R";
-    else if (!velocity) return "P";
-    else if (velocity < 15) return "1";
-    else if (velocity < 30) return "2";
-    else if (velocity < 45) return "3";
-    else if (velocity < 80) return "4";
-    else if (velocity < 120) return "5";
-    else return "6";
+void updateRPM() {
+    while (1) {
+        rpm = 15;
+        vTaskDelay(TICK_LENGTH);
+    }
+}
+
+uint8_t *gearToString() {
+    if (gear < 0) return "R";
+    if (!gear) return "P";
+    else return &(gear + '0');
 }
 
 void printRPM(uint8_t *str) {
     strcat(str, "RPM: ");
-    intToString(calculateRPM(), str);
+    intToString(rpm, str);  
     strcat(str, " x100");
     drawStringScaled(str, 6, 2, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
@@ -158,19 +170,9 @@ void printRPM(uint8_t *str) {
 
 void printGear(uint8_t *str) {
     strcat(str, "Gear:   ");
-    strcat(str, getGear());
+    strcat(str, gearToString());
     drawStringScaled(str, 5, 3, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
-}
-
-void printDetails(uint8_t *str) {
-    for (int i = 1; i <= 3; i++) {
-        clearScreen(11, i, 3, FONT_SCALE);        
-    }
-
-    printVelocity(str);
-    printRPM(str);
-    printGear(str);
 }
 
 void driveTask() {
@@ -178,9 +180,32 @@ void driveTask() {
     uint8_t *str = malloc(256);
     drawVertDivider(0, 2);
 
+    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
+    xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
+    xTaskCreate(updateGear, "gear", 128, NULL, 0, NULL);
+    xTaskCreate(updateRPM, "rpm", 128, NULL, 0, NULL);
+
+    int prevVelocity = -1;
+    int prevRPM = -1;
+    int prevGear = -1;
+
     while (1) {
-        printDetails(str);
-        vTaskDelay(DELAY_MIN);
+        if (velocity != prevVelocity) {
+            clearScreen(11, 1, 3, FONT_SCALE);
+            printVelocity(str);
+        }
+
+        if (rpm != prevRPM) {
+            clearScreen(11, 2, 3, FONT_SCALE);
+            printRPM(str);            
+        }
+        
+        if (gear != prevGear) {
+            clearScreen(11, 3, 3, FONT_SCALE);
+            printGear(str);
+        }
+
+        vTaskDelay(DELAY_SHORT);
     }
     free(str);
 }
@@ -407,8 +432,6 @@ int main(void)
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
     xTaskCreate(updateGpio, "gpio", 128, NULL, 0, NULL);
-    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
-    xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
 
     // 0 - No debug
     // 1 - Debug
