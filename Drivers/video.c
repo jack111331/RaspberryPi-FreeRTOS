@@ -10,7 +10,9 @@ char loaded = 0;
 
 #define CHAR_WIDTH 6
 #define CHAR_HEIGHT 8
+
 #define COLUMNS 4
+#define SCREEN_SPLITS 2
 
 int SCREEN_WIDTH;
 int SCREEN_HEIGHT;
@@ -143,10 +145,41 @@ void drawChar(unsigned char c, int x, int y, int colour){
 }
 
 __attribute__((no_instrument_function))
+void drawCharScaled(unsigned char c, int x, int y, int colour, int scale){
+	int i, j;
+
+	//convert the character to an index
+	c = c & 0x7F;
+	if (c < ' ') {
+		c = 0;
+	} else {
+		c -= ' ';
+	}
+
+	//draw pixels of the character
+	for (j = 0; j < (CHAR_WIDTH * scale); j++) {
+		for (i = 0; i < (CHAR_HEIGHT * scale); i++) {
+			//unsigned char temp = font[c][j];
+			if (font[c][j] & (1<<i)) {
+				framebuffer[((y + (i % scale)) + i) * SCREEN_WIDTH + ((x + (j % scale)) + j)] = colour;
+			}
+		}
+	}
+}
+
+__attribute__((no_instrument_function))
 void drawString(const char* str, int x, int y, int colour){
 	while (*str) {
 		drawChar(*str++, x, y, colour);
-		x += CHAR_WIDTH; 
+		x += CHAR_WIDTH;
+	}
+}
+
+__attribute__((no_instrument_function))
+void drawStringScaled(const char* str, int x, int y, int colour, int scale){
+	while (*str) {
+		drawCharScaled(*str++, x, y, colour, scale);
+		x += CHAR_WIDTH * scale;
 	}
 }
 
@@ -164,14 +197,14 @@ void println(const char* message, int colour){
 	drawString(message, position_x, position_y, colour);
 	position_y = position_y + CHAR_HEIGHT + 1;
 	if(position_y >= SCREEN_HEIGHT){
-		if(position_x + 2 * ((SCREEN_WIDTH / 2) / COLUMNS) > (SCREEN_WIDTH / 2)){
+		if(position_x + 2 * ((SCREEN_WIDTH / SCREEN_SPLITS) / COLUMNS) > (SCREEN_WIDTH / SCREEN_SPLITS)){
 
 			volatile int* timeStamp = (int*)0x3f003004;
 			int stop = *timeStamp + 5000 * 1000;
 			while (*timeStamp < stop) __asm__("nop");
 
 			for (int y = 0; y < SCREEN_HEIGHT; y++) {
-				for (int x = 0; x < SCREEN_WIDTH / 2; x++) {
+				for (int x = 0; x < (SCREEN_WIDTH / SCREEN_SPLITS); x++) {
 					framebuffer[y * SCREEN_WIDTH + x] = 0xFF000000;
 				}
 			}
@@ -179,7 +212,7 @@ void println(const char* message, int colour){
 			position_x = 0;
 		}else{
 			position_y = 0;
-			position_x += (SCREEN_WIDTH / 2) / COLUMNS;
+			position_x += (SCREEN_WIDTH / SCREEN_SPLITS) / COLUMNS;
 		}
 	}
 
