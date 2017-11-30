@@ -192,10 +192,11 @@ __attribute__((no_instrument_function))
 void clearScreen(int x, int y, int n, int scale) {
 	int xOffset = (SCREEN_WIDTH / SCREEN_SPLITS);	
 	x *= (CHAR_WIDTH * scale);
+	x += xOffset;
 	y *= (CHAR_HEIGHT * scale);
-	int x2 = x * n + xOffset;
+	int x2 = x + n * (CHAR_HEIGHT * scale);
 
-	drawRect(x + xOffset, y, x2, y + (CHAR_HEIGHT * scale), RED_TEXT);
+	drawRect(x, y, x2, y + (CHAR_HEIGHT * scale), RED_TEXT);
 }
 
 int position_x = 0;
