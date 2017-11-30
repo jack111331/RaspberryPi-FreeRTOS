@@ -43,7 +43,7 @@ int blinkerState = 0;
 int reverseState = 0;
 
 unsigned velocity = 0;
-unsigned rpm = 8;
+unsigned rpm = 800;
 int gear = 0;
 
 void updateGpio() {
@@ -155,7 +155,7 @@ void updateGear() {
 
 void updateRPM() {
     while (1) {
-        rpm = 15;
+        rpm = 1500;
         vTaskDelay(TICK_LENGTH);
     }
 }
