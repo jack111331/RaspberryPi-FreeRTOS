@@ -26,7 +26,7 @@
 
 #define TICK_LENGTH 500
 #define DELAY_SHORT 100
-#define DELAY_MIN 32
+#define DELAY_MIN 16
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
@@ -174,9 +174,6 @@ void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *str = malloc(256);
     drawVertDivider(0, 2);
-
-    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
-    xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
 
     while (1) {
         printDetails(str);
@@ -407,6 +404,8 @@ int main(void)
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
     xTaskCreate(updateGpio, "gpio", 128, NULL, 0, NULL);
+    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
+    xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
 
     // 0 - No debug
     // 1 - Debug
