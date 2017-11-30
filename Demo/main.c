@@ -101,8 +101,8 @@ void intToString(unsigned n, uint8_t *str) {
     uint8_t *empty = " ";
 
     int i0 = n / 1000;
-    int i1 = n / 100;
-    int i2 = n / 10;
+    int i1 = (n % 1000) / 100;
+    int i2 = (n % 100) / 10;
     int i3 = n % 10;
 
     uint8_t c0 = i0 + '0';
