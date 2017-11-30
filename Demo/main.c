@@ -26,7 +26,7 @@
 
 #define TICK_LENGTH 500
 #define DELAY_SHORT 100
-#define DELAY_MIN 16
+#define DELAY_MIN 1
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
