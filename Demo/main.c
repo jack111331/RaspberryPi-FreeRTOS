@@ -50,6 +50,32 @@ void updateGpio() {
     }
 }
 
+void updateLights() {
+    int accPrev = -1;
+    int brakePrev = -1;
+    int clutchPrev = -1;
+    int indicatorState = -1;
+
+    while (1) {
+        if (accState != accPrev) {
+            drawSquare(3, 4, 2, 4, accState ? ACCEL_ON : ACCEL_OFF);
+        }
+
+        if (brakeState != brakePrev) {
+            drawSquare(3, 7, 2, 4, brakeState ? BRAKE_ON : BRAKE_OFF);            
+        }
+
+        if (clutchState != clutchPrev) {
+            drawSquare(3, 10, 2, 4, clutchState ? CLUTCH_ON : CLUTCH_OFF);            
+        }
+
+        accPrev = accState;
+        brakePrev = brakeState;
+        clutchPrev = clutchState;
+        vTaskDelay(TICK_LENGTH);
+    }
+}
+
 void intToString(unsigned n, uint8_t *str) {
     uint8_t *empty = " ";
 
@@ -311,7 +337,8 @@ int main(void)
 
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
-    xTaskCreate(updateGpio, "update", 128, NULL, 0, NULL);
+    xTaskCreate(updateGpio, "gpio", 128, NULL, 0, NULL);
+    xTaskCreate(updateLights, "lights", 128, NULL, 0, NULL);
 
     // 0 - No debug
     // 1 - Debug

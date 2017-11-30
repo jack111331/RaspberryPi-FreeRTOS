@@ -21,5 +21,13 @@ void dumpDebug();
 #define AQUA_TEXT      0xFF00FFFF
 #define VIOLET_TEXT    0xFFCC88CC
 
+#define ACCEL_ON       0xFF00C800
+#define ACCEL_OFF      0xFF006400
+#define BRAKE_ON       0xFFC80000
+#define BRAKE_OFF      0xFF640000
+#define CLUTCH_ON      0xFF0000C8
+#define CLUTCH_OFF     0xFF000064
+#define INDICATOR_ON   0xFFFFCC00
+#define INDICATOR_OFF  0xFFFF9900
 
 #endif

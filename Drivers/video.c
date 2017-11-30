@@ -199,6 +199,18 @@ void clearScreen(int x, int y, int n, int scale) {
 	drawRect(x, y, x2, y + (CHAR_HEIGHT * scale), BLACK_TEXT);
 }
 
+void drawSquare(int x, int y, int size, int scale, int colour) {
+	int xOffset = (SCREEN_WIDTH / SCREEN_SPLITS);	
+	x *= (CHAR_WIDTH * scale);
+	x += xOffset;
+	y *= (CHAR_HEIGHT * scale);
+	size *= (CHAR_WIDTH * scale);
+	int x2 = x + size;
+	int y2 = y + size;
+
+	drawRect(x, y, x2, y2, colour);
+}
+
 __attribute__((no_instrument_function))
 void drawVertDivider(int x, int width) {
 	x += (SCREEN_WIDTH / SCREEN_SPLITS);
