@@ -89,6 +89,7 @@ void printVelocity(uint8_t *velocityStr) {
 void driveTask() {
     vTaskDelay(TICK_LENGTH);
     uint8_t *velocityStr = malloc(256);
+    drawVertDivider(0, 2);
     printVelocity(velocityStr);
 
     while (1) {
@@ -299,8 +300,6 @@ int main(void)
 
     DisableInterrupts();
     InitInterruptController();
-
-    drawVertDivider(0, 2);
 
     // Ensure the IP and gateway match the router settings
     const unsigned char ucIPAddress[4] = {10, 10, 206, 100};
