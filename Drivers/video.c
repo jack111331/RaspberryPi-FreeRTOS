@@ -157,11 +157,11 @@ void drawCharScaled(unsigned char c, int x, int y, int colour, int scale) {
 
 	for (j = 0; j < CHAR_WIDTH; j++) {
 		for (i = 0; i < CHAR_HEIGHT; i++) {
-			if (font[c][j] & (1<<i)) {
-				for (int y2 = 0; y2 < scale; y2++) {
-					for (int x2 = 0; x2 < scale; x2++) {
-						framebuffer[(y + y2 + (i * scale)) * SCREEN_WIDTH + (x + x2 + (j * scale))] = colour;
-					}
+			for (int y2 = 0; y2 < scale; y2++) {
+				for (int x2 = 0; x2 < scale; x2++) {
+					framebuffer[(y + y2 + (i * scale)) * SCREEN_WIDTH
+						+ (x + x2 + (j * scale))]
+						= (font[c][j] & (1<<i)) ? colour : BLACK_TEXT;
 				}
 			}
 		}
@@ -200,7 +200,7 @@ void clearScreen(int x, int y, int n, int scale) {
 }
 
 void drawSquare(int x, int y, int size, int scale, int colour) {
-	int xOffset = (SCREEN_WIDTH / SCREEN_SPLITS);	
+	int xOffset = (SCREEN_WIDTH / SCREEN_SPLITS);
 	x *= (CHAR_WIDTH * scale);
 	x += xOffset;
 	y *= (CHAR_HEIGHT * scale);

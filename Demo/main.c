@@ -131,14 +131,6 @@ void updateVelocity() {
     }
 }
 
-void printVelocity(uint8_t *str) {
-    strcat(str, "Velocity: ");
-    intToString(velocity, str);
-    strcat(str, " km/h");
-    drawStringScaled(str, 1, 1, WHITE_TEXT, FONT_SCALE);
-    strcpy(str, "");
-}
-
 void updateGear() {
     while (1) {
         if (reverseState) gear = -1;
@@ -165,6 +157,14 @@ void *gearToString(uint8_t *str) {
     if (gear < 0) g = 'R';
     else if (!gear) g = 'P';
     strncat(str, &g, 1);
+}
+
+void printVelocity(uint8_t *str) {
+    strcat(str, "Velocity: ");
+    intToString(velocity, str);
+    strcat(str, " km/h");
+    drawStringScaled(str, 1, 1, WHITE_TEXT, FONT_SCALE);
+    strcpy(str, "");
 }
 
 void printRPM(uint8_t *str) {
@@ -206,17 +206,17 @@ void driveTask() {
 
     while (1) {
         if (velocity != prevVelocity) {
-            clearScreen(11, 1, 4, FONT_SCALE);
+            // clearScreen(11, 1, 4, FONT_SCALE);
             printVelocity(str);
         }
 
         if (rpm != prevRPM) {
-            clearScreen(11, 2, 4, FONT_SCALE);
+            // clearScreen(11, 2, 4, FONT_SCALE);
             printRPM(str);
         }
 
         if (gear != prevGear) {
-            clearScreen(11, 3, 4, FONT_SCALE);
+            // clearScreen(11, 3, 4, FONT_SCALE);
             printGear(str);
         }
 
