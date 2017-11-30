@@ -300,6 +300,8 @@ int main(void)
     DisableInterrupts();
     InitInterruptController();
 
+    drawVertDivider(0, 2);
+
     // Ensure the IP and gateway match the router settings
     const unsigned char ucIPAddress[4] = {10, 10, 206, 100};
     const unsigned char ucNetMask[4] = {255, 255, 255, 0};

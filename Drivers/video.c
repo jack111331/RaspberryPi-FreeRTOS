@@ -196,7 +196,13 @@ void clearScreen(int x, int y, int n, int scale) {
 	y *= (CHAR_HEIGHT * scale);
 	int x2 = x + n * (CHAR_WIDTH * scale);
 
-	drawRect(x, y, x2, y + (CHAR_HEIGHT * scale), RED_TEXT);
+	drawRect(x, y, x2, y + (CHAR_HEIGHT * scale), BLACK_TEXT);
+}
+
+__attribute__((no_instrument_function))
+void drawVertDivider(int x, int width) {
+	x += (SCREEN_WIDTH / SCREEN_SPLITS);
+	drawRect(x, 0, x + width, SCREEN_HEIGHT, GRAY_TEXT);
 }
 
 int position_x = 0;
@@ -221,7 +227,7 @@ void println(const char* message, int colour){
 
 			for (int y = 0; y < SCREEN_HEIGHT; y++) {
 				for (int x = 0; x < (SCREEN_WIDTH / SCREEN_SPLITS); x++) {
-					framebuffer[y * SCREEN_WIDTH + x] = 0xFF000000;
+					framebuffer[y * SCREEN_WIDTH + x] = BLACK_TEXT;
 				}
 			}
 			position_y = 0;

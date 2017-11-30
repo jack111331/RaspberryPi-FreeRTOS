@@ -11,6 +11,7 @@ void videotest();
 void dumpDebug();
 
 #define WHITE_TEXT     0xFFFFFFFF
+#define BLACK_TEXT     0xFF000000
 #define RED_TEXT       0xFFFF0000
 #define GREEN_TEXT     0xFF00FF00
 #define ORANGE_TEXT    0xFFFF9900
