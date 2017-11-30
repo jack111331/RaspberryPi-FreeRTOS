@@ -26,7 +26,7 @@
 
 #define TICK_LENGTH 500
 #define DELAY_SHORT 100
-#define DELAY_MIN 16
+#define DELAY_MIN 200
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
@@ -116,10 +116,12 @@ void intToString(unsigned n, uint8_t *str) {
 }
 
 void updateVelocity() {
-    if (accState && velocity < MAX_VELOCITY) velocity++;
-    else if (brakeState && velocity > 0) velocity--;
+    while (1) {
+        if (accState && velocity < MAX_VELOCITY) velocity++;
+        else if (brakeState && velocity > 0) velocity--;
 
-    clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
+        clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
+    }
 }
 
 void printVelocity(uint8_t *str) {
