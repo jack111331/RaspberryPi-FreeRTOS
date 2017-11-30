@@ -194,7 +194,7 @@ void clearScreen(int x, int y, int n, int scale) {
 	x *= (CHAR_WIDTH * scale);
 	x += xOffset;
 	y *= (CHAR_HEIGHT * scale);
-	int x2 = x + (n - 1) * (CHAR_WIDTH * scale);
+	int x2 = x + n * (CHAR_WIDTH * scale);
 
 	drawRect(x, y, x2, y + (CHAR_HEIGHT * scale), RED_TEXT);
 }
