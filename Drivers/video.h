@@ -13,6 +13,7 @@ void dumpDebug();
 #define WHITE_TEXT     0xFFFFFFFF
 #define BLACK_TEXT     0xFF000000
 #define GRAY_TEXT      0xFFE9E9E9
+#define DARK_TEXT      0xFF303030
 #define RED_TEXT       0xFFFF0000
 #define GREEN_TEXT     0xFF00FF00
 #define ORANGE_TEXT    0xFFFF9900
@@ -22,12 +23,8 @@ void dumpDebug();
 #define VIOLET_TEXT    0xFFCC88CC
 
 #define ACCEL_ON       0xFF00C800
-#define ACCEL_OFF      0xFF006400
 #define BRAKE_ON       0xFFC80000
-#define BRAKE_OFF      0xFF640000
 #define CLUTCH_ON      0xFF0000C8
-#define CLUTCH_OFF     0xFF000064
 #define BLINKER_ON     0xFFFFCC00
-#define BLINKER_OFF    0xFFFF9900
 
 #endif

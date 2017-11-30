@@ -55,39 +55,35 @@ void updateLights() {
     int accPrev = -1;
     int brakePrev = -1;
     int clutchPrev = -1;
-    int blinkerPrev = -1;
     int blinkerCycle = 0;
 
     while (1) {
         if (accState != accPrev) {
-            drawSquare(4, 3, 2, 4, accState ? ACCEL_ON : ACCEL_OFF);
+            drawSquare(10, 3, 2, 4, accState ? ACCEL_ON : DARK_TEXT);
         }
 
         if (brakeState != brakePrev) {
-            drawSquare(7, 3, 2, 4, brakeState ? BRAKE_ON : BRAKE_OFF);            
+            drawSquare(7, 3, 2, 4, brakeState ? BRAKE_ON : DARK_TEXT);            
         }
 
         if (clutchState != clutchPrev) {
-            drawSquare(10, 3, 2, 4, clutchState ? CLUTCH_ON : CLUTCH_OFF);            
+            drawSquare(4, 3, 2, 4, clutchState ? CLUTCH_ON : DARK_TEXT);            
         }
 
-        if (blinkerState != blinkerPrev) {
-            if (!blinkerState) {
-                drawSquare(1, 3, 2, 4, BLINKER_OFF);
-                drawSquare(13, 3, 2, 4, BLINKER_OFF);
-            }
-            else if (blinkerState == 1) {
-                drawSquare(1, 3, 2, 4, blinkerCycle ? BLINKER_ON : BLINKER_OFF);
-            }
-            else if (blinkerState == 2) {
-                drawSquare(13, 3, 2, 4, blinkerCycle ? BLINKER_ON : BLINKER_OFF);
-            }
+        if (!blinkerState) {
+            drawSquare(1, 3, 2, 4, DARK_TEXT);
+            drawSquare(13, 3, 2, 4, DARK_TEXT);
+        }
+        else if (blinkerState == 1) {
+            drawSquare(1, 3, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+        }
+        else if (blinkerState == 2) {
+            drawSquare(13, 3, 2, 4, blinkerCycle ? BLINKER_ON : DARK_TEXT);
         }
 
         accPrev = accState;
         brakePrev = brakeState;
         clutchPrev = clutchState;
-        blinkerPrev = blinkerState;
         blinkerCycle = blinkerCycle ? 0 : 1;
         vTaskDelay(TICK_LENGTH);
     }
