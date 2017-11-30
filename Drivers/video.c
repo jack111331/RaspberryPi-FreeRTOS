@@ -7,8 +7,11 @@
 #include <mailbox.h>
 #include <5x5_font.h>
 char loaded = 0;
+
 #define CHAR_WIDTH 6
 #define CHAR_HEIGHT 8
+#define COLUMNS 4
+
 int SCREEN_WIDTH;
 int SCREEN_HEIGHT;
 
@@ -46,8 +49,8 @@ void initFB(){
 		attempts++;
 	}*/
 
-	SCREEN_WIDTH = 1920;//mailbuffer[5];
-	SCREEN_HEIGHT = 1080;//mailbuffer[6];
+	SCREEN_WIDTH = 1920;  // mailbuffer[5];
+	SCREEN_HEIGHT = 1080; // mailbuffer[6];
 
 	mailbuffer[0] = 22 * 4;		//mail buffer size
 	mailbuffer[1] = 0;		//response code
@@ -161,7 +164,7 @@ void println(const char* message, int colour){
 	drawString(message, position_x, position_y, colour);
 	position_y = position_y + CHAR_HEIGHT + 1;
 	if(position_y >= SCREEN_HEIGHT){
-		if(position_x + 2 * (SCREEN_WIDTH / 8) > SCREEN_WIDTH){
+		if(position_x + 2 * ((SCREEN_WIDTH / 2) / COLUMNS) > (SCREEN_WIDTH / 2)){
 
 			volatile int* timeStamp = (int*)0x3f003004;
 			int stop = *timeStamp + 5000 * 1000;
@@ -174,7 +177,7 @@ void println(const char* message, int colour){
 			position_x = 0;
 		}else{
 			position_y = 0;
-			position_x += SCREEN_WIDTH / 8;
+			position_x += (SCREEN_WIDTH / 2) / COLUMNS;
 		}
 	}
 

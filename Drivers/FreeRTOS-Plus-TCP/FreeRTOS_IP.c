@@ -1692,7 +1692,7 @@ portBASE_TYPE lHeaderLength = ( pxIPHeader->ucVersionHeaderLength & 0x0F) << 2;
 
 			case ipPROTOCOL_UDP :
 				{
-println("udp not supported", 0xFFFFFFFF); return eReleaseBuffer;
+					// println("udp not supported", 0xFFFFFFFF); return eReleaseBuffer;
 					/* The IP packet contained a UDP frame. */
 					UDPPacket_t *pxUDPPacket = ( UDPPacket_t * ) ( pxNetworkBuffer->pucEthernetBuffer );
 

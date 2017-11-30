@@ -82,7 +82,7 @@ void printVelocity(uint8_t *velocityStr) {
     intToString(velocity, velocityStr);
     strcat(velocityStr, " km/h");
 
-    println(velocityStr, WHITE_TEXT);
+    drawString(velocityStr, 1216, 16);
     strcpy(velocityStr, "");
 }
 
@@ -242,9 +242,9 @@ void serverListenTask()
             if (socketStatus) strcat(totalBuffer, pucRxBuffer);
             else {
                 free(totalBuffer);
-		totalBuffer = malloc(64);
+		        totalBuffer = malloc(64);
                 strcpy(totalBuffer, "From server: Socket closed (user exited)");
-		totalBytes = sizeof(uint8_t) * strlen((char *)totalBuffer);
+		        totalBytes = sizeof(uint8_t) * strlen((char *)totalBuffer);
             }
 
             while ((lSent >= 0) && (lTotalSent < totalBytes))
