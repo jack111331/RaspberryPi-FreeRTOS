@@ -27,7 +27,7 @@ void dumpDebug();
 #define BRAKE_OFF      0xFF640000
 #define CLUTCH_ON      0xFF0000C8
 #define CLUTCH_OFF     0xFF000064
-#define INDICATOR_ON   0xFFFFCC00
-#define INDICATOR_OFF  0xFFFF9900
+#define BLINKER_ON     0xFFFFCC00
+#define BLINKER_OFF    0xFFFF9900
 
 #endif
