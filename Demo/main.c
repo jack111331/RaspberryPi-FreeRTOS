@@ -1,6 +1,6 @@
 // main.c
 // Authored by Jared Hull
-// Modified by Roope Lindström & Emil Pirinen
+// Modified by Roope Lindstrom & Emil Pirinen
 //
 // Main initialises the devices
 // Tasks simulate car lights
@@ -18,6 +18,11 @@
 // Only for debug, normally should not include private header
 #include "FreeRTOS_IP_Private.h"
 
+#include <uspi.h>
+#include <uspios.h>
+#include <uspi/util.h>
+#include <uspi/usb.h>
+
 #define SERVER_PORT 8080
 
 #define ACCELERATE_LED_GPIO 23
@@ -25,10 +30,12 @@
 #define CLUTCH_LED_GPIO 25
 
 #define TICK_LENGTH 500
-#define DELAY_SHORT 100
+#define BLINKER_DELAY 500
 
 #define MAX_VELOCITY 280
 #define CLUTCH_THRESHOLD 5
+#define VELOCITY_DRAG 14
+#define BRAKE_DRAG 18
 
 #define FONT_SCALE 4
 
@@ -43,6 +50,7 @@ int blinkerState = 0;
 int reverseState = 0;
 
 unsigned velocity = 0;
+unsigned distance = 0;
 unsigned rpm = 800;
 int gear = 0;
 
@@ -51,7 +59,7 @@ void updateGpio() {
         SetGpio(ACCELERATE_LED_GPIO, accState);
         SetGpio(BRAKE_LED_GPIO, brakeState);
         SetGpio(CLUTCH_LED_GPIO, clutchState);
-        vTaskDelay(DELAY_SHORT);
+        vTaskDelay(TICK_LENGTH);
     }
 }
 
@@ -59,7 +67,10 @@ void updateLights() {
     int accPrev = -1;
     int brakePrev = -1;
     int clutchPrev = -1;
+
+    int blinkerPrev = -1;
     int blinkerCycle = 0;
+    int blinkerLight = 1;
 
     int row = 5;
 
@@ -81,19 +92,53 @@ void updateLights() {
             drawSquare(13, row, 2, FONT_SCALE, DARK_TEXT);
         }
         else if (blinkerState == 1) {
-            drawSquare(1, row, 2, FONT_SCALE, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(1, row, 2, FONT_SCALE, blinkerLight ? BLINKER_ON : DARK_TEXT);
             drawSquare(13, row, 2, FONT_SCALE, DARK_TEXT);
         }
         else if (blinkerState == 2) {
             drawSquare(1, row, 2, FONT_SCALE, DARK_TEXT);
-            drawSquare(13, row, 2, FONT_SCALE, blinkerCycle ? BLINKER_ON : DARK_TEXT);
+            drawSquare(13, row, 2, FONT_SCALE, blinkerLight ? BLINKER_ON : DARK_TEXT);
         }
 
-        accPrev = accState;
-        brakePrev = brakeState;
+        if (blinkerState) {
+	    blinkerCycle++;
+
+	    if (blinkerCycle >= (BLINKER_DELAY / TICK_LENGTH)) {
+	        blinkerLight = blinkerLight ? 0 : 1;
+		blinkerCycle = 0;
+	    }
+	} else if (blinkerState != blinkerPrev) {
+	    blinkerCycle = 0;
+	    blinkerLight = 0;
+	}
+
+	accPrev = accState;
+	brakePrev = brakeState;
         clutchPrev = clutchState;
-        blinkerCycle = blinkerCycle ? 0 : 1;
+	blinkerPrev = blinkerState;
+
         vTaskDelay(TICK_LENGTH);
+    }
+}
+
+static void keyPressHandler(const char *str) {
+    println("Key pressed", ORANGE_TEXT);
+    println(str, ORANGE_TEXT);
+}
+
+void initKeyboard() {
+    vTaskDelay(3000);
+
+    if (USPiKeyboardAvailable()) {
+        // println("Registering keyboard handlers", ORANGE_TEXT);
+        // USPiKeyboardRegisterKeyPressedHandler(keyPressHandler);
+        // println("Keyboard handler registered", ORANGE_TEXT);
+
+	TUSPiDeviceInformation *info = malloc(512);
+	USPiDeviceGetInformation(1, 0, info);
+	println(info->pManufacturer, GREEN_TEXT);
+	println(info->pProduct, GREEN_TEXT);
+	free(info);
     }
 }
 
@@ -123,8 +168,17 @@ void intToString(unsigned n, uint8_t *str) {
 
 void updateVelocity() {
     while (1) {
-        if (accState && velocity < MAX_VELOCITY) velocity++;
-        else if (brakeState && velocity > 0) velocity--;
+	int prevVelocity = velocity;
+
+        if (accState && velocity < MAX_VELOCITY) {
+	    velocity += (velocity / VELOCITY_DRAG) * (TICK_LENGTH / 100);
+	    if (velocity == prevVelocity) velocity++;
+	    if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
+	}
+        else if (brakeState && velocity > 0) {
+	    velocity -= (velocity / BRAKE_DRAG) * (TICK_LENGTH / 100);
+	    if (velocity == prevVelocity) velocity--;
+	}
 
         clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
         vTaskDelay(TICK_LENGTH);
@@ -156,6 +210,7 @@ void *gearToString(uint8_t *str) {
     uint8_t g = (gear + '0');
     if (gear < 0) g = 'R';
     else if (!gear) g = 'P';
+    strcat(str, "   ");
     strncat(str, &g, 1);
 }
 
@@ -175,7 +230,7 @@ void printRPM(uint8_t *str) {
 }
 
 void printGear(uint8_t *str) {
-    strcat(str, "Gear:    ");
+    strcat(str, "Gear: ");
     gearToString(str);
     drawStringScaled(str, 5, 3, WHITE_TEXT, FONT_SCALE);
     strcpy(str, "");
@@ -206,24 +261,21 @@ void driveTask() {
 
     while (1) {
         if (velocity != prevVelocity) {
-            // clearScreen(11, 1, 4, FONT_SCALE);
             printVelocity(str);
         }
 
         if (rpm != prevRPM) {
-            // clearScreen(11, 2, 4, FONT_SCALE);
             printRPM(str);
         }
 
         if (gear != prevGear) {
-            // clearScreen(11, 3, 4, FONT_SCALE);
             printGear(str);
         }
 
         prevVelocity = velocity;
         prevRPM = rpm;
         prevGear = gear;
-        vTaskDelay(DELAY_SHORT);
+        vTaskDelay(TICK_LENGTH);
     }
     free(str);
 }
@@ -261,7 +313,6 @@ int runCommand(uint8_t *cmd) {
 }
 
 #undef CREATE_SOCK_TASK
-// #define CREATE_SOCK_TASK
 #define tcpechoSHUTDOWN_DELAY (pdMS_TO_TICKS(5000))
 
 // Server task works in this build
@@ -278,30 +329,28 @@ void serverListenTask()
     // For debug
     FreeRTOS_Socket_t *sockt;
 
-    // printAddressConfiguration();
     volatile int times = 10;
     println("Server task starting", BLUE_TEXT);
     if (FreeRTOS_IsNetworkUp())
     {
-        println("Network is UP", BLUE_TEXT);
+        println("Network is up", BLUE_TEXT);
     }
     else
     {
-        println("Network is Down", BLUE_TEXT);
+        println("Network is down", BLUE_TEXT);
         while (!FreeRTOS_IsNetworkUp())
         {
             vTaskDelay(xDelay500ms);
         }
     }
-    println("Serv tsk done wait net", BLUE_TEXT);
 
     Socket_t listen_sock;
     listen_sock = FreeRTOS_socket(FREERTOS_AF_INET, FREERTOS_SOCK_STREAM, FREERTOS_IPPROTO_TCP);
-    printHex("listenfd sock: ", (int)listen_sock, BLUE_TEXT);
+    printHex("Listenfd sock: ", (int)listen_sock, BLUE_TEXT);
     printHex("IPPROTO_TCP val: ", FREERTOS_IPPROTO_TCP, BLUE_TEXT);
     if (listen_sock == FREERTOS_INVALID_SOCKET)
     {
-        println("Socket is NOT valid", GREEN_TEXT);
+        println("Socket is not valid", GREEN_TEXT);
     }
     else
     {
@@ -313,7 +362,7 @@ void serverListenTask()
         }
         else
         {
-            printHex("Proto NOT TCP: ", sockt->ucProtocol, BLUE_TEXT);
+            printHex("Proto is not TCP: ", sockt->ucProtocol, BLUE_TEXT);
         }
     }
 
@@ -339,13 +388,13 @@ void serverListenTask()
     socklen_t cli_size = sizeof(client);
     println("Server task about to bind", BLUE_TEXT);
     status = FreeRTOS_bind(listen_sock, &server, sizeof(server));
-    printHex("bind status: ", (int)status, BLUE_TEXT);
+    printHex("Bind status: ", (int)status, BLUE_TEXT);
     sockt = (FreeRTOS_Socket_t *)listen_sock;
     printHex("Bind port: ", (unsigned int)sockt->usLocPort, BLUE_TEXT);
 
     println("Server task about to listen", BLUE_TEXT);
     status = FreeRTOS_listen(listen_sock, xBacklog);
-    printHex("listen status: ", (int)status, BLUE_TEXT);
+    printHex("Listen status: ", (int)status, BLUE_TEXT);
 
     int clients = 0;
     int32_t lBytes, lSent, lTotalSent;
@@ -364,7 +413,12 @@ void serverListenTask()
         if ((lBytes = FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0)) > 0)
         {
             socketStatus = runCommand(pucRxBuffer);
-            println(pucRxBuffer, RED_TEXT);
+
+	    uint8_t* printMessage = malloc(512);
+	    strcpy(printMessage, "> ");
+	    strcat(printMessage, pucRxBuffer);
+            println(printMessage, RED_TEXT);
+	    free(printMessage);
 
             lSent = 0;
             lTotalSent = 0;
@@ -380,9 +434,9 @@ void serverListenTask()
             if (socketStatus) strcat(totalBuffer, pucRxBuffer);
             else {
                 free(totalBuffer);
-		        totalBuffer = malloc(64);
+		totalBuffer = malloc(64);
                 strcpy(totalBuffer, "From server: Socket closed (user exited)");
-		        totalBytes = sizeof(uint8_t) * strlen((char *)totalBuffer);
+		totalBytes = sizeof(uint8_t) * strlen((char *)totalBuffer);
             }
 
             while ((lSent >= 0) && (lTotalSent < totalBytes))
@@ -404,8 +458,7 @@ void serverListenTask()
 
             do
             {
-                if (FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0) < 0)
-                    break;
+                if (FreeRTOS_recv(connect_sock, pucRxBuffer, ipconfigTCP_MSS, 0) < 0) break;
             } while ((xTaskGetTickCount() - xTimeOnShutdown) < tcpechoSHUTDOWN_DELAY);
 
             println("Shutdown successful", GREEN_TEXT);
@@ -424,6 +477,7 @@ void serverLoop()
     while (1)
     {
         serverListenTask();
+	vTaskDelay(TICK_LENGTH);
     }
 }
 
@@ -453,6 +507,7 @@ int main(void)
     xTaskCreate(serverLoop, "server", 128, NULL, 0, NULL);
     xTaskCreate(driveTask, "drive", 128, NULL, 0, NULL);
     xTaskCreate(updateGpio, "gpio", 128, NULL, 0, NULL);
+    // xTaskCreate(initKeyboard, "uspi", 128, NULL, 0, NULL);
 
     // 0 - No debug
     // 1 - Debug
@@ -463,10 +518,8 @@ int main(void)
 
     vTaskStartScheduler();
 
-    /*
-	 *	We should never get here, but just in case something goes wrong,
-	 *	we'll place the CPU into a safe loop.
-	 */
+    // We should never get here, but just in case something goes wrong,
+    // we'll place the CPU into a safe loop.
     while (1)
     {
         ;
