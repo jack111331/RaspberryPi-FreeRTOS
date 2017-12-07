@@ -18,10 +18,10 @@
 // Only for debug, normally should not include private header
 #include "FreeRTOS_IP_Private.h"
 
-#include <uspi.h>
-#include <uspios.h>
-#include <uspi/util.h>
-#include <uspi/usb.h>
+// #include <uspi.h>
+// #include <uspios.h>
+// #include <uspi/util.h>
+// #include <uspi/usb.h>
 
 #define SERVER_PORT 8080
 
@@ -33,9 +33,19 @@
 #define BLINKER_DELAY 500
 
 #define MAX_VELOCITY 280
+#define MAX_VELOCITY_R 50
 #define CLUTCH_THRESHOLD 5
-#define VELOCITY_DRAG 14
-#define BRAKE_DRAG 18
+#define MIN_VEL_CHANGE 5
+
+#define RPM 1500
+#define RPM_MAX 9150
+#define RPM_MULTIPLIER 170
+
+#define GEAR_2_MIN 40
+#define GEAR_3_MIN 80
+#define GEAR_4_MIN 120
+#define GEAR_5_MIN 170
+#define GEAR_6_MIN 235
 
 #define FONT_SCALE 4
 
@@ -49,10 +59,10 @@ int clutchState = 1;
 int blinkerState = 0;
 int reverseState = 0;
 
-unsigned velocity = 0;
-unsigned distance = 0;
-unsigned rpm = 800;
+int velocity = 0;
+int rpm = RPM;
 int gear = 0;
+int distance = 0;
 
 void updateGpio() {
     while (1) {
@@ -72,7 +82,7 @@ void updateLights() {
     int blinkerCycle = 0;
     int blinkerLight = 1;
 
-    int row = 5;
+    int row = 6;
 
     while (1) {
         if (accState != accPrev) {
@@ -121,6 +131,7 @@ void updateLights() {
     }
 }
 
+/*
 static void keyPressHandler(const char *str) {
     println("Key pressed", ORANGE_TEXT);
     println(str, ORANGE_TEXT);
@@ -141,6 +152,7 @@ void initKeyboard() {
 	free(info);
     }
 }
+*/
 
 void intToString(unsigned n, uint8_t *str) {
     uint8_t *empty = " ";
@@ -171,14 +183,23 @@ void updateVelocity() {
 	int prevVelocity = velocity;
 
         if (accState && velocity < MAX_VELOCITY) {
-	    velocity += (velocity / VELOCITY_DRAG) * (TICK_LENGTH / 100);
-	    if (velocity == prevVelocity) velocity++;
-	    if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
+	    velocity += ((MAX_VELOCITY / 2) + MAX_VELOCITY - velocity) / 100 * (TICK_LENGTH / 100);
+
+	    if (velocity < prevVelocity + MIN_VEL_CHANGE) velocity += MIN_VEL_CHANGE - (velocity - prevVelocity);
+
+	    if (reverseState) {
+	    	if (velocity > MAX_VELOCITY_R) velocity = MAX_VELOCITY_R;
+	    }
+	    else if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
+
 	}
         else if (brakeState && velocity > 0) {
-	    velocity -= (velocity / BRAKE_DRAG) * (TICK_LENGTH / 100);
-	    if (velocity == prevVelocity) velocity--;
+	    velocity -= ((MAX_VELOCITY * 30) + MAX_VELOCITY - velocity) / (velocity * (TICK_LENGTH / 100));
+
+	    if (velocity > prevVelocity - MIN_VEL_CHANGE) velocity -= MIN_VEL_CHANGE - (prevVelocity - velocity);
 	}
+
+	if (velocity < 0) velocity = 0;
 
         clutchState = velocity < CLUTCH_THRESHOLD ? 1 : 0;
         vTaskDelay(TICK_LENGTH);
@@ -186,23 +207,44 @@ void updateVelocity() {
 }
 
 void updateGear() {
+    int prevGear = 0;
+
     while (1) {
         if (reverseState) gear = -1;
         else if (!velocity) gear = 0;
-        else if (velocity < 15) gear = 1;
-        else if (velocity < 30) gear = 2;
-        else if (velocity < 45) gear = 3;
-        else if (velocity < 80) gear = 4;
-        else if (velocity < 120) gear = 5;
+        else if (velocity < GEAR_2_MIN) gear = 1;
+        else if (velocity < GEAR_3_MIN) gear = 2;
+        else if (velocity < GEAR_4_MIN) gear = 3;
+        else if (velocity < GEAR_5_MIN) gear = 4;
+        else if (velocity < GEAR_6_MIN) gear = 5;
         else gear = 6;
+
+	if (gear != prevGear) rpm = RPM;
+
         vTaskDelay(TICK_LENGTH);
     }
 }
 
 void updateRPM() {
     while (1) {
-        rpm = 1500;
-        vTaskDelay(TICK_LENGTH);
+        if (!gear) rpm = RPM;
+	else if (gear == 1 || gear == -1) rpm = (velocity) * RPM_MULTIPLIER + RPM;
+	else if (gear == 2) rpm = (velocity - GEAR_2_MIN) * RPM_MULTIPLIER + RPM;
+	else if (gear == 3) rpm = (velocity - GEAR_3_MIN) * RPM_MULTIPLIER + RPM;
+        else if (gear == 4) rpm = (velocity - GEAR_4_MIN) * RPM_MULTIPLIER + RPM;
+	else if (gear == 5) rpm = (velocity - GEAR_5_MIN) * RPM_MULTIPLIER + RPM;
+	else if (gear == 6) rpm = (velocity - GEAR_6_MIN) * RPM_MULTIPLIER + RPM;
+
+	if (rpm > RPM_MAX) rpm = RPM_MAX;
+	vTaskDelay(TICK_LENGTH);
+    }
+}
+
+void updateDistance() {
+    while (1) {
+	distance += (velocity * 10 / 36) / (1000 / TICK_LENGTH);
+	if (distance / 1000 > 999) distance = 999999;
+	vTaskDelay(TICK_LENGTH);
     }
 }
 
@@ -236,11 +278,19 @@ void printGear(uint8_t *str) {
     strcpy(str, "");
 }
 
+void printDistance(uint8_t *str) {
+    strcat(str, "Distance: ");
+    intToString(distance / 1000, str);
+    strcat(str, " km");
+    drawStringScaled(str, 1, 4, WHITE_TEXT, FONT_SCALE);
+    strcpy(str, "");
+}
+
 void printInfo() {
-    drawStringScaled("reverse / forward", 1, 11, WHITE_TEXT, FONT_SCALE);
-    drawStringScaled("accel  / brake", 1, 12, WHITE_TEXT, FONT_SCALE);
-    drawStringScaled("left  / right", 1, 13, WHITE_TEXT, FONT_SCALE);
-    drawStringScaled("blinker", 1, 14, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("reverse / forward", 1, 12, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("accel  / brake", 1, 13, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("left  / right", 1, 14, WHITE_TEXT, FONT_SCALE);
+    drawStringScaled("blinker", 1, 15, WHITE_TEXT, FONT_SCALE);
 }
 
 void driveTask() {
@@ -254,10 +304,12 @@ void driveTask() {
     xTaskCreate(updateVelocity, "velocity", 128, NULL, 0, NULL);
     xTaskCreate(updateGear, "gear", 128, NULL, 0, NULL);
     xTaskCreate(updateRPM, "rpm", 128, NULL, 0, NULL);
+    xTaskCreate(updateDistance, "distance", 128, NULL, 0, NULL);
 
     int prevVelocity = -1;
     int prevRPM = -1;
     int prevGear = -1;
+    int prevDistance = -1;
 
     while (1) {
         if (velocity != prevVelocity) {
@@ -272,9 +324,15 @@ void driveTask() {
             printGear(str);
         }
 
+	if (distance / 1000 != prevDistance) {
+	    printDistance(str);
+	}
+
         prevVelocity = velocity;
         prevRPM = rpm;
         prevGear = gear;
+	prevDistance = distance / 1000;
+
         vTaskDelay(TICK_LENGTH);
     }
     free(str);
@@ -494,7 +552,7 @@ int main(void)
 
     // Ensure the IP and gateway match the router settings
     // const unsigned char ucIPAddress[4] = {192, 168, 0, 113};
-    const unsigned char ucIPAddress[4] = {10, 10, 206, 100];
+    const unsigned char ucIPAddress[4] = {10, 10, 206, 100};
     const unsigned char ucNetMask[4] = {255, 255, 255, 0};
     // const unsigned char ucGatewayAddress[4] = {192, 168, 0, 1};
     // const unsigned char ucDNSServerAddress[4] = {192, 168, 0, 1};
